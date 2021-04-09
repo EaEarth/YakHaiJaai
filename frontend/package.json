@@ -26,9 +26,14 @@
     ]
   },
   "dependencies": {
+    "bootstrap": "^4.6.0",
+    "mobx": "^6.1.8",
+    "mobx-react-lite": "^3.2.0",
     "next": "latest",
     "react": "^17.0.1",
-    "react-dom": "^17.0.1"
+    "react-bootstrap": "^1.5.2",
+    "react-dom": "^17.0.1",
+    "sass": "^1.32.8"
   },
   "devDependencies": {
     "@testing-library/react": "^11.2.5",
