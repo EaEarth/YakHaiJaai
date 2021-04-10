@@ -1,9 +1,12 @@
-import NavBar from "../components/Navigation/NavBar"
+import NavBar from '../components/Navigation/NavBar'
+import DefaultLayout from '../layouts/Default'
 
 export const Test = () => {
-    return(
-    <NavBar></NavBar>
-    );
+  return (
+    <DefaultLayout>
+      <></>
+    </DefaultLayout>
+  )
 }
 
-export default Test;
+export default Test
