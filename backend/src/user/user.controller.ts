@@ -23,7 +23,7 @@ export class UserController {
   }
 
   @Get('current-user/info')
-  getCurrentUserInfo(@Request() req): Promise<User> {
+  getCurrentUserInfo(@Request() req): Promise<User | undefined> {
     return this.service.getUserInfoByToken(req.headers.authtoken);
   }
 

@@ -48,7 +48,7 @@ export class UserService {
     return this.repo.save(userInfo);
   }
 
-  getUserInfoByToken(token): Promise<User> {
+  getUserInfoByToken(token): Promise<User | undefined> {
     const user = this.getUserFromToken(token);
     return this.repo.findOne(user.uid);
   }
