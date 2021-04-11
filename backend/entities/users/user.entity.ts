@@ -1,17 +1,12 @@
 import { FileItem } from 'entities/files/fileItem.entity';
-import {
-  Column,
-  Entity,
-  OneToOne,
-  PrimaryGeneratedColumn,
-  Unique,
-} from 'typeorm';
+import { Column, Entity, OneToOne, PrimaryColumn, Unique } from 'typeorm';
 
 @Entity()
 @Unique(['username'])
+@Unique(['uid'])
 export class User {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryColumn()
+  uid: number;
 
   @Column()
   username: string;
@@ -29,7 +24,7 @@ export class User {
   birthDate: Date;
 
   @Column()
-  telNumber: string;
+  phoneNumber: string;
 
   @OneToOne(() => FileItem, (file) => file.avatarUser)
   avatarPict: FileItem;
