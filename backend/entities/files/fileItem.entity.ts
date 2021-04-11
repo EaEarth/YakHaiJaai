@@ -1,6 +1,13 @@
 import { Bill } from 'entities/bills/bill.entity';
 import { User } from 'entities/users/user.entity';
-import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity()
 export class FileItem {
@@ -15,6 +22,12 @@ export class FileItem {
 
   @Column()
   path: string;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 
   @OneToOne(() => User, (user) => user.avatarPict)
   avatarUser: User;

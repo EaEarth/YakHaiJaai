@@ -29,8 +29,9 @@ export class FileItemService {
     return this.repo.findOne(id);
   }
 
-  async findByTitle(title: string): Promise<FileItem[] | undefined> {
-    return this.repo.find({ title: title });
+  async findByTitle(token, title: string): Promise<FileItem[] | undefined> {
+    const user = await this.userService.getUserInfoByToken(token);
+    return this.repo.find({ title: title, avatarUser: user });
   }
 
   async createFile(

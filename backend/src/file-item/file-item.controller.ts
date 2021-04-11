@@ -56,7 +56,6 @@ export class FileItemController {
   @Get('title/:fileTitle')
   @UsePipes(new ValidationPipe({ whitelist: true }))
   async findByTitle(@Request() req, @Param('fileTitle') fileTitle: string) {
-    this.userService.getUserInfoByToken(req.headers.authtoken);
-    return this.fileService.findByTitle(fileTitle);
+    return this.fileService.findByTitle(req.headers.authtoken, fileTitle);
   }
 }

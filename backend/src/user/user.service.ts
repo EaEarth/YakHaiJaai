@@ -50,7 +50,7 @@ export class UserService {
 
   getUserInfoByToken(token): Promise<User | undefined> {
     const user = this.getUserFromToken(token);
-    return this.repo.findOne(user.uid);
+    return this.repo.findOne(user.uid, { relations: ['avatarPict'] });
   }
 
   async updateUserInfo(token, dto: updateUserInfo): Promise<User> {

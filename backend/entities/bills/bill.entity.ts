@@ -1,5 +1,12 @@
 import { FileItem } from 'entities/files/fileItem.entity';
-import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity()
 export class Bill {
@@ -8,6 +15,12 @@ export class Bill {
 
   @Column()
   name: string;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 
   @OneToOne(() => FileItem, (file) => file.qrBill)
   qrCode: FileItem;
