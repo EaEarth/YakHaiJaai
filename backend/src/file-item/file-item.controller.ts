@@ -12,6 +12,7 @@ import {
   Body,
   UsePipes,
   ValidationPipe,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UserService } from 'src/user/user.service';
@@ -31,15 +32,20 @@ export class FileItemController {
     return this.fileService.createFile(req, dto, file);
   }
 
-  @Get('index')
+  @Get('user/index')
   async index(@Request() req) {
-    this.userService.getUserInfoByToken(req.headers.authtoken);
-    return this.fileService.index(req.user);
+    const user = await this.userService.getUserInfoByToken(
+      req.headers.authtoken,
+    );
+    return this.fileService.index();
   }
 
   @Get('id/:fileId')
-  async findById(@Request() req, @Param('fileId') fileId: number) {
-    this.userService.getUserInfoByToken(req.headers.authtoken);
+  async findById(
+    @Request() req,
+    @Param('fileId', new ParseIntPipe()) fileId: number,
+  ) {
+    this.userService.getUserFromToken(req.headers.authtoken);
     return this.fileService.findById(fileId);
   }
 
@@ -49,13 +55,14 @@ export class FileItemController {
     @Param('fileName') fileName: string,
     @Res() res,
   ) {
-    this.userService.getUserInfoByToken(req.headers.authtoken);
+    this.userService.getUserFromToken(req.headers.authtoken);
     return this.fileService.serveStatic(fileName, res);
   }
 
   @Get('title/:fileTitle')
   @UsePipes(new ValidationPipe({ whitelist: true }))
   async findByTitle(@Request() req, @Param('fileTitle') fileTitle: string) {
-    return this.fileService.findByTitle(req.headers.authtoken, fileTitle);
+    const user = await this.userService.getUserFromToken(req.headers.authtoken);
+    return this.fileService.findByTitle(fileTitle);
   }
 }

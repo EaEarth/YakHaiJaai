@@ -141,3 +141,57 @@ Get current login user information
   }
 }
 ```
+
+---
+
+## `GET` /search/:name
+
+---
+
+**Description**
+
+```php
+Get all user which contain {name} in their username, firstname or lastname
+```
+
+**Header**
+
+```json
+{
+  "authtoken": "token from firebase authentication service"
+}
+```
+
+**Parameter**
+
+```php
+Path Variable
+[
+  "name": "required | string"
+]
+```
+
+**Response Example**
+
+```json
+[
+  {
+    "uid": "987654321",
+    "username": "testNew",
+    "prefix": "Miss",
+    "firstName": "NewAlbert",
+    "lastName": "NewAlbedo",
+    "phoneNumber": "9876543210",
+    "birthDate": "2021-11-20T02:55:58.168Z",
+    "createdAt": "2021-03-14T06:35:21.740Z",
+    "updatedAt": "2021-03-14T06:35:21.740Z",
+    "avatarPict": {
+      "title": "2021-02-18T04:47:19.681Z.jpeg",
+      "type": "image/jpeg",
+      "path": "http://localhost:3000/api/files/2021-02-18T04:47:19.681Z.jpeg",
+      "id": 9
+    }
+  },
+  ...
+]
+```

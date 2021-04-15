@@ -1,8 +1,13 @@
 import { FileItem } from 'entities/files/fileItem.entity';
+import { Item } from 'entities/items/item.entity';
+import { User } from 'entities/users/user.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinTable,
+  ManyToMany,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -14,7 +19,7 @@ export class Bill {
   id: number;
 
   @Column()
-  name: string;
+  title: string;
 
   @CreateDateColumn()
   createdAt: Date;
@@ -24,4 +29,11 @@ export class Bill {
 
   @OneToOne(() => FileItem, (file) => file.qrBill)
   qrCode: FileItem;
+
+  @OneToMany(() => Item, (item) => item.bill)
+  items: Item[];
+
+  @ManyToMany(() => User, (user) => user.bills)
+  @JoinTable()
+  participants: User[];
 }

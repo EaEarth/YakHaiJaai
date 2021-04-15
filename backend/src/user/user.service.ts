@@ -65,4 +65,18 @@ export class UserService {
     }
     return this.repo.save(newUserInfo);
   }
+
+  async searchByName(name: string): Promise<User[]> {
+    return this.repo
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.avatarPict', 'picture')
+      .where('LOWER(user.username) like :name', { name: name.toLowerCase() })
+      .orWhere('LOWER(user.firstname) like :name', { name: name.toLowerCase() })
+      .orWhere('LOWER(user.lastname) like :name', { name: name.toLowerCase() })
+      .getMany();
+  }
+
+  findById(id: number): Promise<User> {
+    return this.repo.findOne(id);
+  }
 }

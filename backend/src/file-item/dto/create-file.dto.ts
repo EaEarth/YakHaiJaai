@@ -1,9 +1,7 @@
-import { IsOptional, IsString } from "class-validator";
+import { IsOptional, IsString } from 'class-validator';
 
-export class createFile{
-
-    @IsOptional()
-    @IsString()
-    readonly title: string;
-
+export class createFile {
+  @IsOptional()
+  @IsString()
+  readonly title: string;
 }

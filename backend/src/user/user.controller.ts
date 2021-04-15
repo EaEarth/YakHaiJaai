@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Param,
   Patch,
   Post,
   Request,
@@ -25,6 +26,15 @@ export class UserController {
   @Get('current-user/info')
   getCurrentUserInfo(@Request() req): Promise<User | undefined> {
     return this.service.getUserInfoByToken(req.headers.authtoken);
+  }
+
+  @Get('search/:name')
+  async searchUserByName(
+    @Param('name') name: string,
+    @Request() req,
+  ): Promise<User[]> {
+    await this.service.getUserFromToken(req.headers.authtoken);
+    return this.service.searchByName(name);
   }
 
   @Post()

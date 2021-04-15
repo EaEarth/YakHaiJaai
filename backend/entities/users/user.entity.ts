@@ -1,8 +1,11 @@
+import { Bill } from 'entities/bills/bill.entity';
 import { FileItem } from 'entities/files/fileItem.entity';
+import { Item } from 'entities/items/item.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToMany,
   OneToOne,
   PrimaryColumn,
   Unique,
@@ -42,4 +45,10 @@ export class User {
 
   @OneToOne(() => FileItem, (file) => file.avatarUser)
   avatarPict: FileItem;
+
+  @ManyToMany(() => Item, (item) => item.payers)
+  items: Item[];
+
+  @ManyToMany(() => Bill, (bill) => bill.participants)
+  bills: Bill[];
 }
