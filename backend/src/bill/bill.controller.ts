@@ -27,7 +27,7 @@ export class BillController {
     private readonly userService: UserService,
   ) {}
 
-  @Post()
+  @Post('bill')
   @UsePipes(new ValidationPipe({ whitelist: true }))
   async storeBill(@Request() req, @Body() dto: createBill): Promise<Bill> {
     await this.userService.getUserFromToken(req.headers.authtoken);
@@ -87,7 +87,7 @@ export class BillController {
     return this.billService.updateItem(id, dto);
   }
 
-  @Delete(':id')
+  @Delete('bill/:id')
   async deleteBillById(
     @Request() req,
     @Param('id', new ParseIntPipe()) id: number,

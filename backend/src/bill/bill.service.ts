@@ -86,6 +86,8 @@ export class BillService {
       .createQueryBuilder('bill')
       .leftJoin('bill.participants', 'participants')
       .where('participants.uid = :uid', { uid: uid })
+      .leftJoinAndSelect('bill.items', 'items')
+      .leftJoinAndSelect('items.payers', 'payers')
       .getMany();
   }
 
