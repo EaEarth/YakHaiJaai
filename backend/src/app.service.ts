@@ -7,9 +7,9 @@ export class AppService {
     return 'Hello World!';
   }
 
-  initializeFirebaseAdmin() {
-    admin.initializeApp({
-      credential: admin.credential.cert(process.env.FIREBASE_KEY_PATH),
-    });
-  }
+  // initializeFirebaseAdmin() {
+  //   admin.initializeApp({
+  //     credential: admin.credential.cert(process.env.FIREBASE_KEY_PATH),
+  //   });
+  // }
 }

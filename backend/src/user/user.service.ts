@@ -21,7 +21,7 @@ export class UserService {
   ) {}
 
   getUserFromToken(token): any {
-    this.appService.initializeFirebaseAdmin();
+    // this.appService.initializeFirebaseAdmin();
     admin
       .auth()
       .verifyIdToken(token)
