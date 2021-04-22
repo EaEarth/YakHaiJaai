@@ -24,16 +24,10 @@ export class User {
   username: string;
 
   @Column()
-  prefix: string;
-
-  @Column()
   firstname: string;
 
   @Column()
   lastname: string;
-
-  @Column('date')
-  birthDate: Date;
 
   @Column()
   phoneNumber: string;

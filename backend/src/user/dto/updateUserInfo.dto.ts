@@ -12,9 +12,6 @@ export class updateUserInfo {
   readonly username: string;
 
   @IsOptional()
-  readonly prefix: string;
-
-  @IsOptional()
   readonly firstName: string;
 
   @IsOptional()
@@ -24,11 +21,6 @@ export class updateUserInfo {
   @IsNumberString()
   @Length(10)
   readonly phoneNumber: string;
-
-  @Type(() => Date)
-  @IsOptional()
-  @IsDate()
-  readonly birthDate: Date;
 
   @IsOptional()
   @IsNumber()

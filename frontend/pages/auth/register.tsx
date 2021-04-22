@@ -5,29 +5,32 @@ import DefaultLayout from '../../layouts/Default'
 import Image from 'react-bootstrap/Image'
 import axios from 'axios'
 import { useRouter } from 'next/router'
+import { useRootStore } from '../../stores/stores'
+import { auth } from '../../src/firebase'
 
 export const Register = (props) => {
   const router = useRouter()
+  const systemStore = useRootStore().systemStore
   const [modalShow, setModalShow] = useState(false)
   const [pict, setPict] = useState(null)
   const [urlPic, setURLPic] = useState(null)
   const [profile, setProfile] = useState({
     username: '',
-    prefix: '',
     firstname: '',
     lastname: '',
     email: '',
     phoneNumber: '',
-    birthDate: '',
+    password: '',
+    confimedPassword: '',
   })
   const [required, setRequired] = useState({
     username: '',
-    prefix: '',
     firstname: '',
     lastname: '',
     email: '',
     phoneNumber: '',
-    birthDate: '',
+    password: '',
+    confimedPassword: '',
   })
 
   useEffect(() => {
@@ -40,6 +43,33 @@ export const Register = (props) => {
 
   const handleChange = (e) => {
     const { id, value } = e.target
+    if (id === 'confirmedPassword') {
+      if (value !== profile.password) {
+        setRequired((prevRequired) => ({
+          ...prevRequired,
+          confimedPassword: "*Password doesn't match",
+        }))
+      } else {
+        setRequired((prevRequired) => ({
+          ...prevRequired,
+          confimedPassword: '',
+        }))
+      }
+    } else if (id === 'password') {
+      if (profile.confimedPassword.length) {
+        if (value !== profile.confimedPassword) {
+          setRequired((prevRequired) => ({
+            ...prevRequired,
+            confimedPassword: "*Password doesn't match",
+          }))
+        } else {
+          setRequired((prevRequired) => ({
+            ...prevRequired,
+            confimedPassword: '',
+          }))
+        }
+      }
+    }
     setProfile((prevState) => ({
       ...prevState,
       [id]: value,
@@ -83,51 +113,77 @@ export const Register = (props) => {
       allInfo = false
     } else setRequired((prevRequired) => ({ ...prevRequired, phoneNumber: '' }))
 
-    if (!profile.birthDate.length) {
+    if (!profile.password.length) {
       setRequired((prevRequired) => ({
         ...prevRequired,
-        birthDate: '*required',
+        password: '*required',
       }))
       allInfo = false
-    } else setRequired((prevRequired) => ({ ...prevRequired, birthDate: '' }))
+    } else if (profile.password.length < 6) {
+      setRequired((prevRequired) => ({
+        ...prevRequired,
+        password: 'Password must have more than 5 characters',
+      }))
+      allInfo = false
+    } else setRequired((prevRequired) => ({ ...prevRequired, password: '' }))
+
+    if (!profile.confimedPassword.length) {
+      setRequired((prevRequired) => ({
+        ...prevRequired,
+        password: '*required',
+      }))
+      allInfo = false
+    } else if (required.confimedPassword.length) {
+      allInfo = false
+    } else
+      setRequired((prevRequired) => ({
+        ...prevRequired,
+        confirmedPassword: '',
+      }))
 
     if (!allInfo) return
     const payload = {
-      email: profile.email,
-      prefix: profile.prefix,
       firstname: profile.firstname,
       lastname: profile.lastname,
-      telNumber: profile.phoneNumber,
+      phoneNumber: profile.phoneNumber,
       avatarId: pict?.id || null,
-      birthDate: profile.birthDate,
     }
-    // if (pict != null) {
-    //   await applicationStore.uploadFile(profile.profilePic)
-    //   payload['avatarFileId'] = applicationStore.id
-    // }
-    // await axios
-    //   .patch('/users', payload)
-    //   .then((response) => {
-    //     if (response.status === 200) {
-    //       setIsEdit(false)
-    //       setModalShow(true)
-    //     }
-    //   })
-    //   .catch((err) => {
-    //     console.log(err)
-    //   })
+    if (pict != null) {
+      await systemStore.uploadFile(pict)
+      payload['avatarFileId'] = systemStore.id
+    }
+    auth
+      .createUserWithEmailAndPassword(profile.email, profile.password)
+      .then((cred) => {
+        auth.currentUser.getIdToken(true).then((idToken) => {
+          axios
+            .post('/user', payload, {
+              headers: {
+                authtoken: idToken,
+              },
+            })
+            .then((response) => {
+              if (response.status === 200) {
+                setModalShow(true)
+              }
+            })
+            .catch((err) => {
+              console.log(err)
+            })
+        })
+      })
   }
 
   return (
     <DefaultLayout>
       <Head>
-        <title>Profile</title>
+        <title>Register</title>
       </Head>
 
       <Container className="my-4">
         <Row>
           <Col className="text-center">
-            <h1>Edit Profile</h1>
+            <h1>Register</h1>
           </Col>
         </Row>
         <Row>
@@ -155,19 +211,46 @@ export const Register = (props) => {
             <Form>
               <fieldset>
                 <Form.Group>
-                  <Form.Label>Prefix</Form.Label>
+                  <Form.Label>Email</Form.Label>
                   <FormControl
-                    type="text"
-                    id="prefix"
-                    as="select"
-                    value={profile.prefix}
+                    type="email"
+                    id="email"
+                    placeholder="Email"
+                    value={profile.email}
                     onChange={handleChange}
-                    custom
-                  >
-                    <option>Mr.</option>
-                    <option>Ms.</option>
-                    <option>Mrs.</option>
-                  </FormControl>
+                    isInvalid={!!required.email}
+                  />
+                  <FormControl.Feedback type="invalid">
+                    {!!required.email}
+                  </FormControl.Feedback>
+                </Form.Group>
+                <Form.Group>
+                  <Form.Label>Password</Form.Label>
+                  <FormControl
+                    type="password"
+                    id="password"
+                    placeholder="password"
+                    value={profile.password}
+                    onChange={handleChange}
+                    isInvalid={!!required.password}
+                  />
+                  <FormControl.Feedback type="invalid">
+                    {!!required.password}
+                  </FormControl.Feedback>
+                </Form.Group>
+                <Form.Group>
+                  <Form.Label>Confirmed Password</Form.Label>
+                  <FormControl
+                    type="password"
+                    id="confirmedPassword"
+                    placeholder="Confirmed Password"
+                    value={profile.confimedPassword}
+                    onChange={handleChange}
+                    isInvalid={!!required.confimedPassword}
+                  />
+                  <FormControl.Feedback type="invalid">
+                    {!!required.confimedPassword}
+                  </FormControl.Feedback>
                 </Form.Group>
                 <Form.Group>
                   <Form.Label>First Name</Form.Label>
@@ -201,25 +284,10 @@ export const Register = (props) => {
                 </Form.Group>
 
                 <Form.Group>
-                  <Form.Label>Birth Date</Form.Label>
-                  <FormControl
-                    type="date"
-                    id="birthDate"
-                    placeholder="Birth Date"
-                    value={profile.birthDate}
-                    onChange={handleChange}
-                    isInvalid={!!required.birthDate}
-                  />
-                  <FormControl.Feedback type="invalid">
-                    {required.birthDate}
-                  </FormControl.Feedback>
-                </Form.Group>
-
-                <Form.Group>
                   <Form.Label>Phone Number</Form.Label>
                   <FormControl
                     type="text"
-                    id="telNumber"
+                    id="phoneNumber"
                     placeholder="Phone Number"
                     value={profile.phoneNumber}
                     onChange={handleChange}
@@ -227,20 +295,6 @@ export const Register = (props) => {
                   />
                   <FormControl.Feedback type="invalid">
                     {required.phoneNumber}
-                  </FormControl.Feedback>
-                </Form.Group>
-                <Form.Group>
-                  <Form.Label>Email</Form.Label>
-                  <FormControl
-                    type="email"
-                    id="email"
-                    placeholder="Email"
-                    value={profile.email}
-                    onChange={handleChange}
-                    isInvalid={!!required.email}
-                  />
-                  <FormControl.Feedback type="invalid">
-                    {!!required.email}
                   </FormControl.Feedback>
                 </Form.Group>
               </fieldset>
@@ -285,7 +339,7 @@ export const Register = (props) => {
                 >
                   <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
                 </svg>
-                <h1 className="text-success mb-2">Edit Successful</h1>
+                <h1 className="text-success mb-2">Register Successful</h1>
               </Col>
             </Row>
           </Container>

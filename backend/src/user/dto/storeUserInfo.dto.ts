@@ -1,6 +1,4 @@
-import { Type } from 'class-transformer';
 import {
-  IsDate,
   IsNotEmpty,
   IsNumber,
   IsNumberString,
@@ -13,9 +11,6 @@ export class storeUserInfo {
   readonly username: string;
 
   @IsNotEmpty()
-  readonly prefix: string;
-
-  @IsNotEmpty()
   readonly firstname: string;
 
   @IsNotEmpty()
@@ -25,11 +20,6 @@ export class storeUserInfo {
   @IsNumberString()
   @Length(10)
   readonly phoneNumber: string;
-
-  @Type(() => Date)
-  @IsNotEmpty()
-  @IsDate()
-  readonly birthDate: Date;
 
   @IsOptional()
   @IsNumber()
