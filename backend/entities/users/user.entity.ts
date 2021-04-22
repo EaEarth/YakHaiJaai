@@ -5,6 +5,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToMany,
   OneToOne,
   PrimaryColumn,
@@ -16,8 +17,8 @@ import {
 @Unique(['username'])
 @Unique(['uid'])
 export class User {
-  @PrimaryColumn()
-  uid: number;
+  @PrimaryColumn('varchar')
+  uid: string;
 
   @Column()
   username: string;
@@ -44,6 +45,7 @@ export class User {
   updatedAt: Date;
 
   @OneToOne(() => FileItem, (file) => file.avatarUser)
+  @JoinColumn()
   avatarPict: FileItem;
 
   @ManyToMany(() => Item, (item) => item.payers)

@@ -5,6 +5,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   JoinTable,
   ManyToMany,
   OneToMany,
@@ -28,6 +29,7 @@ export class Bill {
   updatedAt: Date;
 
   @OneToOne(() => FileItem, (file) => file.qrBill)
+  @JoinColumn()
   qrCode: FileItem;
 
   @OneToMany(() => Item, (item) => item.bill)

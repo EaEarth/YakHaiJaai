@@ -20,23 +20,24 @@ export class UserService {
     private fileService: FileItemService,
   ) {}
 
-  getUserFromToken(token): any {
-    // this.appService.initializeFirebaseAdmin();
-    admin
+  index() {
+    return this.repo.find();
+  }
+
+  async getUserFromToken(token): Promise<any> {
+    const user = await admin
       .auth()
       .verifyIdToken(token)
-      .then((decodedToken) => {
-        return decodedToken;
-      })
       .catch((error) => {
         console.log(error);
         throw new UnauthorizedException('Token is not valid');
       });
+    return user;
   }
 
   async storeUserInfo(token, dto: storeUserInfo): Promise<User> {
     const { avatarId, ...info } = dto;
-    const user = this.getUserFromToken(token);
+    const user = await this.getUserFromToken(token);
     const userInfo = { ...new User(), ...info };
     userInfo.uid = user.uid;
     if (avatarId) {
@@ -48,9 +49,11 @@ export class UserService {
     return this.repo.save(userInfo);
   }
 
-  getUserInfoByToken(token): Promise<User | undefined> {
-    const user = this.getUserFromToken(token);
-    return this.repo.findOne(user.uid, { relations: ['avatarPict'] });
+  async getUserInfoByToken(token): Promise<User | undefined> {
+    const user = await this.getUserFromToken(token);
+    return this.repo.findOne(user.uid, {
+      relations: ['avatarPict'],
+    });
   }
 
   async updateUserInfo(token, dto: updateUserInfo): Promise<User> {

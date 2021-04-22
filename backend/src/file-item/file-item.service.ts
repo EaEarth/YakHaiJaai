@@ -43,7 +43,7 @@ export class FileItemService {
     );
     const newFile = new FileItem();
 
-    newFile.title = dto.title ? dto.title : file.filename;
+    newFile.title = dto.title ? dto.title : file.originalname;
     newFile.type = file.mimetype;
     newFile.path = `${req.protocol}://${req.headers.host}/api/files/${file.filename}`;
     newFile.avatarUser = user;

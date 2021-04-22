@@ -16,10 +16,10 @@ export class storeUserInfo {
   readonly prefix: string;
 
   @IsNotEmpty()
-  readonly firstName: string;
+  readonly firstname: string;
 
   @IsNotEmpty()
-  readonly lastName: string;
+  readonly lastname: string;
 
   @IsNotEmpty()
   @IsNumberString()

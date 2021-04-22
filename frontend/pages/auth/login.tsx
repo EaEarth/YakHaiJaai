@@ -26,19 +26,12 @@ export const login = observer((prop) => {
   const [loginUser, setLoginUser] = useState(null)
 
   useEffect(() => {
-    if (loginUser) router.push('/')
+    if (loginUser) router.push('/home')
   }, [loginUser])
 
-  auth.onAuthStateChanged((user) => {
-    if (user) {
-      setLoginUser(user)
-      authStore.user = user
-      router.push('/')
-    } else {
-      setLoginUser(null)
-      authStore.user = null
-    }
-  })
+  useEffect(() => {
+    if (authStore.user) router.push('/home')
+  }, [authStore.user])
 
   const handleSubmitClick = (e) => {
     e.preventDefault()
@@ -49,9 +42,8 @@ export const login = observer((prop) => {
       .signInWithEmailAndPassword(email, password)
       .then((response) => {
         setLoginUser((prevState) => response.user)
-        console.log(response.user)
-        authStore.user = response.user
-        router.push('/')
+        authStore.setUser(response.user)
+        router.push('/home')
       })
       .catch((error) => {
         setState((prevState) => ({ ...prevState, error: error.message }))

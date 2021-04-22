@@ -18,6 +18,11 @@ import { UserService } from './user.service';
 export class UserController {
   constructor(private readonly service: UserService) {}
 
+  @Get()
+  index() {
+    return this.service.index();
+  }
+
   @Get('current-user')
   getCurrentUser(@Request() req) {
     return this.service.getUserFromToken(req.headers.authtoken);
@@ -40,7 +45,7 @@ export class UserController {
   @Post()
   @UsePipes(new ValidationPipe({ whitelist: true }))
   storeUserInfo(@Request() req, @Body() dto: storeUserInfo): Promise<User> {
-    return this.storeUserInfo(req.headers.authtoken, dto);
+    return this.service.storeUserInfo(req.headers.authtoken, dto);
   }
 
   @Patch()

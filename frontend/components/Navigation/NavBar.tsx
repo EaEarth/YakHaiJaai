@@ -7,6 +7,8 @@ import { faBell, faUserCircle } from '@fortawesome/free-solid-svg-icons'
 import { useRouter } from 'next/router'
 import { useRootStore } from '../../stores/stores'
 import { auth } from '../../src/firebase'
+import { useEffect } from 'react'
+import axios from 'axios'
 
 export const NavBar = observer((props) => {
   const router = useRouter()
@@ -16,12 +18,42 @@ export const NavBar = observer((props) => {
     router.push('/')
   }
 
+  const handleLoginClick = (e) => {
+    router.push('/auth/login')
+  }
+
   const handleLogoutClick = (e) => {
     e.preventDefault()
     auth.signOut().then((response) => {
-      authStore.user = null
+      authStore.setUser(null)
     })
   }
+
+  auth.onAuthStateChanged((user) => {
+    if (user) {
+      authStore.setUser(user)
+    } else {
+      authStore.setUser(null)
+    }
+  })
+
+  useEffect(() => {
+    if (authStore.user) {
+      auth.currentUser.getIdToken(true).then((idToken) => {
+        axios
+          .get(`http://localhost:8000/api/user/current-user/info`, {
+            headers: {
+              authtoken: idToken,
+            },
+          })
+          .then(function (response) {
+            authStore.setUserInfo(response.data)
+          })
+      })
+    } else {
+      authStore.setUserInfo(null)
+    }
+  }, [authStore.user])
 
   return (
     <Navbar bg="dark" variant="dark">
@@ -64,11 +96,11 @@ export const NavBar = observer((props) => {
       {authStore.isLoggedIn && (
         <Button>
           <FontAwesomeIcon icon={faUserCircle} size="lg" />{' '}
-          {authStore.userInfo.email}
+          {authStore.userInfo.username}
         </Button>
       )}
       {!authStore.isLoggedIn && (
-        <Button>
+        <Button onClick={handleLoginClick}>
           <FontAwesomeIcon icon={faUserCircle} size="lg" /> Login
         </Button>
       )}
