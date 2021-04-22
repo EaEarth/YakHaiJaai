@@ -1,0 +1,45 @@
+.jumbotron {
+    background-image: url('/images/2463_Converted.svg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 92.5vh;
+    width: 100%;
+    background-color: white;
+    margin: 0;
+}
+
+.grid {
+    background-color: rgba(185, 172, 255, 0.2);
+    
+}
+
+.grid:hover{
+    background-color: rgba(185, 172, 255, 0.8);
+}
+
+.recommend{
+    background-color: rgba(209, 241, 250, 0.4);
+    margin: 0;
+}
+
+.image {
+    border-radius: 10%;
+    border: none;
+}
+
+.custom-a {
+    color: inherit; /* blue colors for links too */
+    text-decoration: inherit; /* no underline */
+    
+}
+.custom-a:hover {
+    color: inherit; /* blue colors for links too */
+    text-decoration: inherit; /* no underline */
+}
+
+.title {
+    background-color: rgba(128, 144, 160, 0.4);
+    height: 70px;
+    font-size: medium;
+    font-weight: bold;
+}

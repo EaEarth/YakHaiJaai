@@ -15,7 +15,7 @@ export const NavBar = observer((props) => {
   const authStore = useRootStore().authStore
 
   const handleRegisterClick = (e) => {
-    router.push('/')
+    router.push('/auth/register')
   }
 
   const handleLoginClick = (e) => {

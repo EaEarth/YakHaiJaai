@@ -15,7 +15,7 @@ import DefaultLayout from '../../layouts/Default'
 import { auth } from '../../src/firebase'
 import { useRootStore } from '../../stores/stores'
 
-export const login = observer((prop) => {
+export const Login = observer((prop) => {
   const router = useRouter()
   const authStore = useRootStore().authStore
   const [state, setState] = useState({
@@ -26,11 +26,11 @@ export const login = observer((prop) => {
   const [loginUser, setLoginUser] = useState(null)
 
   useEffect(() => {
-    if (loginUser) router.push('/home')
+    if (loginUser) router.push('/')
   }, [loginUser])
 
   useEffect(() => {
-    if (authStore.user) router.push('/home')
+    if (authStore.user) router.push('/')
   }, [authStore.user])
 
   const handleSubmitClick = (e) => {
@@ -43,7 +43,7 @@ export const login = observer((prop) => {
       .then((response) => {
         setLoginUser((prevState) => response.user)
         authStore.setUser(response.user)
-        router.push('/home')
+        router.push('/')
       })
       .catch((error) => {
         setState((prevState) => ({ ...prevState, error: error.message }))
@@ -111,4 +111,4 @@ export const login = observer((prop) => {
   )
 })
 
-export default login
+export default Login

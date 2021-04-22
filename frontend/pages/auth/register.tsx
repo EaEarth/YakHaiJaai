@@ -7,11 +7,11 @@ import axios from 'axios'
 import { useRouter } from 'next/router'
 import { useRootStore } from '../../stores/stores'
 import { auth } from '../../src/firebase'
+import AuthStore from '../../stores/AuthStore'
 
 export const Register = (props) => {
   const router = useRouter()
   const systemStore = useRootStore().systemStore
-  const [modalShow, setModalShow] = useState(false)
   const [pict, setPict] = useState(null)
   const [urlPic, setURLPic] = useState(null)
   const [profile, setProfile] = useState({
@@ -21,7 +21,7 @@ export const Register = (props) => {
     email: '',
     phoneNumber: '',
     password: '',
-    confimedPassword: '',
+    confirmedPassword: '',
   })
   const [required, setRequired] = useState({
     username: '',
@@ -30,15 +30,16 @@ export const Register = (props) => {
     email: '',
     phoneNumber: '',
     password: '',
-    confimedPassword: '',
+    confirmedPassword: '',
   })
 
   useEffect(() => {
-    if (pict == null) return
-    const url = URL.createObjectURL(pict)
-    setURLPic(url)
+    if (pict !== null) {
+      const url = URL.createObjectURL(pict)
+      setURLPic(url)
 
-    return () => URL.revokeObjectURL(url)
+      return () => URL.revokeObjectURL(url)
+    }
   }, [pict])
 
   const handleChange = (e) => {
@@ -47,27 +48,43 @@ export const Register = (props) => {
       if (value !== profile.password) {
         setRequired((prevRequired) => ({
           ...prevRequired,
-          confimedPassword: "*Password doesn't match",
+          confirmedPassword: "*Password doesn't match",
         }))
       } else {
         setRequired((prevRequired) => ({
           ...prevRequired,
-          confimedPassword: '',
+          confirmedPassword: '',
         }))
       }
     } else if (id === 'password') {
-      if (profile.confimedPassword.length) {
-        if (value !== profile.confimedPassword) {
+      if (profile.confirmedPassword.length) {
+        if (value !== profile.confirmedPassword) {
           setRequired((prevRequired) => ({
             ...prevRequired,
-            confimedPassword: "*Password doesn't match",
+            confirmedPassword: "*Password doesn't match",
           }))
         } else {
           setRequired((prevRequired) => ({
             ...prevRequired,
-            confimedPassword: '',
+            confirmedPassword: '',
           }))
         }
+        if (
+          required.password == 'Password must have more than 5 characters' &&
+          required.password.length &&
+          required.password.length > 5
+        ) {
+          setRequired((prevRequired) => ({
+            ...prevRequired,
+            password: '',
+          }))
+        }
+      }
+      if (required[id] === '*required' && value.length) {
+        setRequired((prevState) => ({
+          ...prevState,
+          [id]: '',
+        }))
       }
     }
     setProfile((prevState) => ({
@@ -127,13 +144,13 @@ export const Register = (props) => {
       allInfo = false
     } else setRequired((prevRequired) => ({ ...prevRequired, password: '' }))
 
-    if (!profile.confimedPassword.length) {
+    if (!profile.confirmedPassword.length) {
       setRequired((prevRequired) => ({
         ...prevRequired,
         password: '*required',
       }))
       allInfo = false
-    } else if (required.confimedPassword.length) {
+    } else if (required.confirmedPassword.length) {
       allInfo = false
     } else
       setRequired((prevRequired) => ({
@@ -143,6 +160,7 @@ export const Register = (props) => {
 
     if (!allInfo) return
     const payload = {
+      username: profile.username,
       firstname: profile.firstname,
       lastname: profile.lastname,
       phoneNumber: profile.phoneNumber,
@@ -150,21 +168,21 @@ export const Register = (props) => {
     }
     if (pict != null) {
       await systemStore.uploadFile(pict)
-      payload['avatarFileId'] = systemStore.id
+      payload['avatarId'] = systemStore.id
     }
     auth
       .createUserWithEmailAndPassword(profile.email, profile.password)
       .then((cred) => {
         auth.currentUser.getIdToken(true).then((idToken) => {
           axios
-            .post('/user', payload, {
+            .post('http://localhost:8000/api/user', payload, {
               headers: {
                 authtoken: idToken,
               },
             })
             .then((response) => {
-              if (response.status === 200) {
-                setModalShow(true)
+              if (response.status === 201) {
+                router.push('/')
               }
             })
             .catch((err) => {
@@ -220,6 +238,7 @@ export const Register = (props) => {
                     onChange={handleChange}
                     isInvalid={!!required.email}
                   />
+                  <p style={{ color: 'red' }}>{required.email}</p>
                   <FormControl.Feedback type="invalid">
                     {!!required.email}
                   </FormControl.Feedback>
@@ -234,6 +253,7 @@ export const Register = (props) => {
                     onChange={handleChange}
                     isInvalid={!!required.password}
                   />
+                  <p style={{ color: 'red' }}>{required.password}</p>
                   <FormControl.Feedback type="invalid">
                     {!!required.password}
                   </FormControl.Feedback>
@@ -244,20 +264,38 @@ export const Register = (props) => {
                     type="password"
                     id="confirmedPassword"
                     placeholder="Confirmed Password"
-                    value={profile.confimedPassword}
+                    value={profile.confirmedPassword}
                     onChange={handleChange}
-                    isInvalid={!!required.confimedPassword}
+                    isInvalid={!!required.confirmedPassword}
                   />
+                  <p style={{ color: 'red' }}>{required.confirmedPassword}</p>
                   <FormControl.Feedback type="invalid">
-                    {!!required.confimedPassword}
+                    {!!required.confirmedPassword}
                   </FormControl.Feedback>
                 </Form.Group>
+
                 <Form.Group>
-                  <Form.Label>First Name</Form.Label>
+                  <Form.Label>Username</Form.Label>
+                  <FormControl
+                    type="text"
+                    id="username"
+                    placeholder="Username"
+                    value={profile.username}
+                    onChange={handleChange}
+                    required
+                    isInvalid={!!required.username}
+                  />
+                  <FormControl.Feedback type="invalid">
+                    {required.username}
+                  </FormControl.Feedback>
+                </Form.Group>
+
+                <Form.Group>
+                  <Form.Label>Firstname</Form.Label>
                   <FormControl
                     type="text"
                     id="firstname"
-                    placeholder="First Name"
+                    placeholder="Firstname"
                     value={profile.firstname}
                     onChange={handleChange}
                     required
@@ -269,11 +307,11 @@ export const Register = (props) => {
                 </Form.Group>
 
                 <Form.Group>
-                  <Form.Label>Last Name</Form.Label>
+                  <Form.Label>Lastname</Form.Label>
                   <FormControl
                     type="text"
                     id="lastname"
-                    placeholder="Last Name"
+                    placeholder="Lastname"
                     value={profile.lastname}
                     onChange={handleChange}
                     isInvalid={!!required.lastname}
@@ -316,7 +354,7 @@ export const Register = (props) => {
               type="button"
               className="float-left my-2 btn btn-danger"
               onClick={() => {
-                router.push('/home')
+                router.push('/')
               }}
             >
               Cancel
@@ -324,27 +362,6 @@ export const Register = (props) => {
           </Col>
         </Row>
       </Container>
-      <Modal show={modalShow} onHide={(e) => setModalShow(false)} centered>
-        <Modal.Body className={``}>
-          <Container>
-            <Row>
-              <Col className="text-center">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="256"
-                  height="256"
-                  fill="currentColor"
-                  className="bi bi-check2 text-success"
-                  viewBox="0 0 16 16"
-                >
-                  <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
-                </svg>
-                <h1 className="text-success mb-2">Register Successful</h1>
-              </Col>
-            </Row>
-          </Container>
-        </Modal.Body>
-      </Modal>
     </DefaultLayout>
   )
 }

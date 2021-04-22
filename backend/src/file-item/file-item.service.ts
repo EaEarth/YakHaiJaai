@@ -38,16 +38,20 @@ export class FileItemService {
     dto: createFile,
     @UploadedFile() file,
   ): Promise<FileItem> {
-    const user = await this.userService.getUserInfoByToken(
-      req.headers.authtoken,
-    );
     const newFile = new FileItem();
+
+    if (req.headers.authtoken) {
+      const user = await this.userService.getUserInfoByToken(
+        req.headers.authtoken,
+      );
+      newFile.avatarUser = user;
+    }
 
     newFile.title = dto.title ? dto.title : file.originalname;
     newFile.type = file.mimetype;
-    newFile.path = `${req.protocol}://${req.headers.host}/api/files/${file.filename}`;
-    newFile.avatarUser = user;
+    newFile.path = `${req.protocol}://${req.headers.host}/api/files/${file.originalname}`;
 
+    console.log(newFile);
     return this.repo.save(newFile);
   }
 
