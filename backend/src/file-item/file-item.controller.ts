@@ -55,7 +55,7 @@ export class FileItemController {
     @Param('fileName') fileName: string,
     @Res() res,
   ) {
-    this.userService.getUserFromToken(req.headers.authtoken);
+    //this.userService.getUserFromToken(req.headers.authtoken);
     return this.fileService.serveStatic(fileName, res);
   }
 

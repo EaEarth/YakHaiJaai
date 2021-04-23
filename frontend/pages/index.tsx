@@ -1,26 +1,38 @@
 import Head from 'next/head'
 import React, { useEffect, useState } from 'react'
-import { Col, Container, Jumbotron, Row } from 'react-bootstrap'
+import { Button, Col, Container, Jumbotron, Row } from 'react-bootstrap'
 import DefaultLayout from '../layouts/Default'
 import styles from '../components/Homepage/homepage.module.scss'
 import { GetServerSidePropsContext } from 'next'
 import axios from 'axios'
 import { auth } from '../src/firebase'
 import BillGrid from '../components/Homepage/Grid'
+import { useRouter } from 'next/router'
 
 export const Home = (props) => {
   const [bills, setbills] = useState(props.bills)
+  const router = useRouter()
   return (
     <DefaultLayout>
       <Head>
         <title>YakHaiJaai</title>
       </Head>
-      <Jumbotron className={`${styles['recommend']}`}>
-        <Container>
-          <Row className="d-block">
-            <h3 className="mb-4 font-weight-bold ">Bill List</h3>
-            <BillGrid bills={bills} />
+      <Jumbotron className={`${styles['bill-list']}`}>
+        <Container className={`${styles['container']}`}>
+          <Row className="show-grid m-1">
+            <Col className={`${styles['table-title']} m-0 font-weight-bold `}>
+              Your Bill
+            </Col>
+            <Col className={`${styles['button']}  text-md-right `}>
+              <Button
+                className={`${styles['button']}`}
+                onClick={() => router.push('/')}
+              >
+                Create
+              </Button>
+            </Col>
           </Row>
+          <BillGrid bills={bills} />
         </Container>
       </Jumbotron>
     </DefaultLayout>
@@ -28,13 +40,18 @@ export const Home = (props) => {
 }
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const cookie = context.req.cookies
-  const token = auth.currentUser.getIdToken(true)
-  const bills = await axios.get(`http://localhost:8000/api/bill/list`, {
-    headers: {
-      authtoken: token,
-    },
-  })
+  const user = auth.currentUser
+  var bills
+  if (user) {
+    const token = user.getIdToken(true)
+    bills = await axios.get(`http://localhost:8000/api/bill/list`, {
+      headers: {
+        authtoken: token,
+      },
+    })
+  } else {
+    bills = []
+  }
 
   return {
     props: {

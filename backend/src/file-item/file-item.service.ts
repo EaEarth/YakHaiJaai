@@ -49,9 +49,8 @@ export class FileItemService {
 
     newFile.title = dto.title ? dto.title : file.originalname;
     newFile.type = file.mimetype;
-    newFile.path = `${req.protocol}://${req.headers.host}/api/files/${file.originalname}`;
+    newFile.path = `${req.protocol}://${req.headers.host}/api/file-item/${file.originalname}`;
 
-    console.log(newFile);
     return this.repo.save(newFile);
   }
 

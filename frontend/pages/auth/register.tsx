@@ -340,7 +340,7 @@ export const Register = (props) => {
           </Col>
         </Row>
         <Row className="">
-          <Col md={6}>
+          <Col>
             <button
               type="button"
               className="float-right my-2 btn btn-success"
@@ -349,7 +349,7 @@ export const Register = (props) => {
               register
             </button>
           </Col>
-          <Col md={6}>
+          <Col>
             <button
               type="button"
               className="float-left my-2 btn btn-danger"

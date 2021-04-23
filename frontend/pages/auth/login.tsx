@@ -99,7 +99,7 @@ export const Login = observer((prop) => {
               </Row>
               <Row className="justify-content-center">
                 <span>Don't have an account?</span>
-                <Link href="/">
+                <Link href="/auth/register">
                   <a className="ml-2">Register</a>
                 </Link>
               </Row>

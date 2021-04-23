@@ -1,3 +1,5 @@
+import { faFileAlt } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
 import React from 'react'
@@ -16,15 +18,26 @@ export const BillCard: React.FC<BillCardProps> = (props) => {
       onClick={(e) => e.preventDefault()}
     >
       <Card
-        className={`${style['grid']} rounded`}
+        className={`${style['grid']} rounded align-items-center`}
         onClick={() => {
           if (props.id) router.push(`/bills/${props.id}`)
         }}
       >
         <Row noGutters className="align-items-center">
-          <Col md={4} className="d-flex align-items-center">
-            <Row noGutters>
-              <Col className="d-flex align-items-center">{props.title}</Col>
+          <Col>
+            <Row noGutters className={` justify-content-center`}>
+              <FontAwesomeIcon
+                className="align-items-center"
+                icon={faFileAlt}
+                size="5x"
+                color="Mediumslateblue"
+              />
+            </Row>
+            <Row
+              noGutters
+              className={`${style['bill-title']} justify-content-center`}
+            >
+              {props.title}
             </Row>
           </Col>
         </Row>
