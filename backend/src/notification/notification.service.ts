@@ -13,6 +13,7 @@ export class NotificationService {
   constructor(
     @InjectRepository(BillNotification)
     private readonly notificationRepo: Repository<BillNotification>,
+    @InjectRepository(User)
     private readonly userRepo: Repository<User>,
     private readonly billService: BillService,
     private readonly userService: UserService,
