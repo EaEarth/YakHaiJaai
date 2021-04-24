@@ -25,4 +25,7 @@ export class updateUserInfo {
   @IsOptional()
   @IsNumber()
   readonly avatarId: number;
+
+  @IsOptional()
+  readonly fcmToken: string;
 }

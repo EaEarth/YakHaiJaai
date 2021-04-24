@@ -12,8 +12,9 @@ import {
   Row,
 } from 'react-bootstrap'
 import DefaultLayout from '../../layouts/Default'
-import { auth } from '../../src/firebase'
+import { auth, firebase } from '../../src/firebase'
 import { useRootStore } from '../../stores/stores'
+import axios from 'axios'
 
 export const Login = observer((prop) => {
   const router = useRouter()
@@ -40,9 +41,59 @@ export const Login = observer((prop) => {
 
     auth
       .signInWithEmailAndPassword(email, password)
-      .then((response) => {
+      .then(async (response) => {
         setLoginUser((prevState) => response.user)
         authStore.setUser(response.user)
+        await auth.currentUser.getIdToken(true).then(async (idToken) => {
+          var messaging
+          if (process.browser) {
+            messaging = firebase.messaging()
+            await messaging
+              .requestPermission()
+              .then(function () {
+                console.log('Notification permission granted.')
+                messaging
+                  .getToken({
+                    vapidKey: process.env.NEXT_PUBLIC_VAPID_KEY,
+                  })
+                  .then((currentToken) => {
+                    if (currentToken) {
+                      const payload = { fcmToken: currentToken }
+                      axios
+                        .patch('http://localhost:8000/api/user', payload, {
+                          headers: {
+                            authtoken: idToken,
+                          },
+                        })
+                        .then((response) => {
+                          if (response.status === 201) {
+                            router.push('/')
+                          }
+                        })
+                        .catch((err) => {
+                          console.log(err)
+                        })
+                    } else {
+                      console.log(
+                        'No registration token available. Request permission to generate one.'
+                      )
+                      router.push('/')
+                    }
+                  })
+                  .catch((err) => {
+                    console.log(
+                      'An error occurred while retrieving token. ',
+                      err
+                    )
+                    router.push('/')
+                  })
+              })
+              .catch(function (err) {
+                console.log('Unable to get permission to notify.', err)
+                router.push('/')
+              })
+          }
+        })
         router.push('/')
       })
       .catch((error) => {

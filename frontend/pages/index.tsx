@@ -5,13 +5,21 @@ import DefaultLayout from '../layouts/Default'
 import styles from '../components/Homepage/homepage.module.scss'
 import { GetServerSidePropsContext } from 'next'
 import axios from 'axios'
-import { auth } from '../src/firebase'
+import { auth, firebase } from '../src/firebase'
 import BillGrid from '../components/Homepage/Grid'
 import { useRouter } from 'next/router'
+import dotenv from 'dotenv'
 
 export const Home = (props) => {
   const [bills, setbills] = useState(props.bills)
   const router = useRouter()
+  var messaging
+  if (process.browser) {
+    messaging = firebase.messaging()
+    messaging.requestPermission().catch(function (err) {
+      console.log('Unable to get permission to notify.', err)
+    })
+  }
   return (
     <DefaultLayout>
       <Head>

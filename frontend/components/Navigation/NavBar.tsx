@@ -1,4 +1,12 @@
-import { Badge, Button, Form, FormControl, NavDropdown } from 'react-bootstrap'
+import {
+  Badge,
+  Button,
+  Col,
+  Form,
+  FormControl,
+  NavDropdown,
+  Row,
+} from 'react-bootstrap'
 import Nav from 'react-bootstrap/Nav'
 import Navbar from 'react-bootstrap/Navbar'
 import { observer } from 'mobx-react-lite'
@@ -9,6 +17,7 @@ import { useRootStore } from '../../stores/stores'
 import { auth } from '../../src/firebase'
 import { useEffect } from 'react'
 import axios from 'axios'
+import styles from '../Homepage/homepage.module.scss'
 
 export const NavBar = observer((props) => {
   const router = useRouter()
@@ -76,11 +85,22 @@ export const NavBar = observer((props) => {
           }
           id="collasible-nav-dropdown"
         >
-          <NavDropdown.Item href="#action/3.1">Action</NavDropdown.Item>
+          <NavDropdown.Item href="#action/3.1">
+            <Col className="p-0">
+              <Row>
+                <Col className={`${styles['nav-title']}`}>Yayoi restaurant</Col>
+              </Row>
+              <Row>
+                <Col className={`${styles['nav-item']}`}>New Bill</Col>
+              </Row>
+            </Col>
+          </NavDropdown.Item>
+          <NavDropdown.Divider />
           <NavDropdown.Item href="#action/3.2">Another action</NavDropdown.Item>
           <NavDropdown.Item href="#action/3.3">Something</NavDropdown.Item>
           <NavDropdown.Divider />
           <NavDropdown.Item href="#action/3.4">Separated link</NavDropdown.Item>
+          <NavDropdown.Divider />
         </NavDropdown>
       )}
       {!authStore.isLoggedIn && (

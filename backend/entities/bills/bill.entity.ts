@@ -1,5 +1,6 @@
 import { FileItem } from 'entities/files/fileItem.entity';
 import { Item } from 'entities/items/item.entity';
+import { BillNotification } from 'entities/notifications/notification.entity';
 import { User } from 'entities/users/user.entity';
 import {
   Column,
@@ -34,6 +35,9 @@ export class Bill {
 
   @OneToMany(() => Item, (item) => item.bill)
   items: Item[];
+
+  @OneToMany(() => BillNotification, (noti) => noti.bill)
+  notifications: BillNotification[];
 
   @ManyToMany(() => User, (user) => user.bills)
   @JoinTable()

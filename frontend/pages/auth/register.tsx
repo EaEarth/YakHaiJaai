@@ -6,7 +6,7 @@ import Image from 'react-bootstrap/Image'
 import axios from 'axios'
 import { useRouter } from 'next/router'
 import { useRootStore } from '../../stores/stores'
-import { auth } from '../../src/firebase'
+import { auth, firebase } from '../../src/firebase'
 import AuthStore from '../../stores/AuthStore'
 
 export const Register = (props) => {
@@ -165,6 +165,7 @@ export const Register = (props) => {
       lastname: profile.lastname,
       phoneNumber: profile.phoneNumber,
       avatarId: pict?.id || null,
+      token: null,
     }
     if (pict != null) {
       await systemStore.uploadFile(pict)
@@ -173,7 +174,38 @@ export const Register = (props) => {
     auth
       .createUserWithEmailAndPassword(profile.email, profile.password)
       .then((cred) => {
-        auth.currentUser.getIdToken(true).then((idToken) => {
+        auth.currentUser.getIdToken(true).then(async (idToken) => {
+          var messaging
+          if (process.browser) {
+            messaging = firebase.messaging()
+            await messaging
+              .requestPermission()
+              .then(function () {
+                console.log('Notification permission granted.')
+                messaging
+                  .getToken({
+                    vapidKey: process.env.NEXT_PUBLIC_VAPID_KEY,
+                  })
+                  .then((currentToken) => {
+                    if (currentToken) {
+                      payload.token = currentToken
+                    } else {
+                      console.log(
+                        'No registration token available. Request permission to generate one.'
+                      )
+                    }
+                  })
+                  .catch((err) => {
+                    console.log(
+                      'An error occurred while retrieving token. ',
+                      err
+                    )
+                  })
+              })
+              .catch(function (err) {
+                console.log('Unable to get permission to notify.', err)
+              })
+          }
           axios
             .post('http://localhost:8000/api/user', payload, {
               headers: {

@@ -17,5 +17,5 @@ export class createItem {
 
   @IsOptional()
   @IsArray()
-  readonly payers: number[];
+  readonly payers: string[];
 }

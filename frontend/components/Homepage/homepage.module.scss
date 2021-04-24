@@ -67,3 +67,17 @@
   font-size: 28px;
   font-weight: bold;
 }
+
+.nav-title {
+  width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: bold;
+}
+
+.nav-item {
+  font-size: 13px;
+  width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

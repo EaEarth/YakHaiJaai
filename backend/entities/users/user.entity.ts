@@ -1,17 +1,20 @@
 import { Bill } from 'entities/bills/bill.entity';
 import { FileItem } from 'entities/files/fileItem.entity';
 import { Item } from 'entities/items/item.entity';
+import { BillNotification } from 'entities/notifications/notification.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToMany,
+  OneToMany,
   OneToOne,
   PrimaryColumn,
   Unique,
   UpdateDateColumn,
 } from 'typeorm';
+import { FcmToken } from './fcmToken.entity';
 
 @Entity()
 @Unique(['username'])
@@ -47,4 +50,10 @@ export class User {
 
   @ManyToMany(() => Bill, (bill) => bill.participants)
   bills: Bill[];
+
+  @ManyToMany(() => FcmToken, (token) => token.users)
+  fcmTokens: FcmToken[];
+
+  @OneToMany(() => BillNotification, (token) => token.user)
+  notifications: BillNotification[];
 }

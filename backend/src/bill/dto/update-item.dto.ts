@@ -17,5 +17,5 @@ export class updateItem {
 
   @IsOptional()
   @IsArray()
-  readonly payers: number[];
+  readonly payers: string[];
 }

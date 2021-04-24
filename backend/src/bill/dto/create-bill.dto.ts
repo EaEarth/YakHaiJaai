@@ -9,7 +9,7 @@ export class createBill {
   readonly itemLists: number[];
 
   @IsOptional()
-  readonly participants: number[];
+  readonly participants: string[];
 
   @IsOptional()
   @IsNumber()

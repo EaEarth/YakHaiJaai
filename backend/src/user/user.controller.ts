@@ -48,6 +48,11 @@ export class UserController {
     return this.service.storeUserInfo(req.headers.authtoken, dto);
   }
 
+  @Post()
+  storeFcmToken(@Request() req, @Body() dto: storeUserInfo): Promise<User> {
+    return this.service.storeUserInfo(req.headers.authtoken, dto);
+  }
+
   @Patch()
   @UsePipes(new ValidationPipe({ whitelist: true }))
   updateUserInfo(@Request() req, @Body() dto: updateUserInfo): Promise<User> {
