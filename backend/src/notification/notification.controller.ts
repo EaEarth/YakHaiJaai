@@ -28,10 +28,21 @@ export class NotificationController {
     return this.service.getNotificationFromUid(user.uid);
   }
 
+  @Get('current-user/unreaded')
+  async getUnreadedNotificationFromCurrentUser(@Request() req) {
+    const user = await this.userService.getUserFromToken(req.headers.authtoken);
+    return this.service.getUnreadedNotificationFromUid(user.uid);
+  }
+
   @Get('bill/:id')
   @UsePipes(new ValidationPipe({ whitelist: true }))
   async getNotificationFromBillId(@Param('id', new ParseIntPipe()) id: number) {
     return this.service.getNotificationByBillId(id);
+  }
+
+  @Post('send')
+  sendNotification(@Body() body) {
+    return this.service.sendNotification(body);
   }
 
   @Post()

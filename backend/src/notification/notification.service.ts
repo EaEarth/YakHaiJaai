@@ -5,6 +5,7 @@ import { User } from 'entities/users/user.entity';
 import { BillService } from 'src/bill/bill.service';
 import { UserService } from 'src/user/user.service';
 import { Repository } from 'typeorm';
+import admin from 'firebase-admin';
 import { createNoti } from './dto/create-notification.dto';
 import { updateNoti } from './dto/update-notification.dto';
 
@@ -22,8 +23,18 @@ export class NotificationService {
   getNotificationFromUid(uid: string): Promise<BillNotification[]> {
     return this.notificationRepo
       .createQueryBuilder('notification')
-      .leftJoin('notification.users', 'users')
-      .where('users.uid = :uid', { uid: uid })
+      .leftJoin('notification.user', 'user')
+      .where('user.uid = :uid', { uid: uid })
+      .leftJoinAndSelect('notification.bill', 'bill')
+      .getMany();
+  }
+
+  getUnreadedNotificationFromUid(uid: string): Promise<BillNotification[]> {
+    return this.notificationRepo
+      .createQueryBuilder('notification')
+      .where('notification.isReaded = :isReaded', { isReaded: false })
+      .leftJoin('notification.user', 'user')
+      .where('user.uid = :uid', { uid: uid })
       .leftJoinAndSelect('notification.bill', 'bill')
       .getMany();
   }
@@ -80,6 +91,29 @@ export class NotificationService {
       await this.notificationRepo.save(notiEntity);
     }
     return;
+  }
+
+  async sendNotification(body) {
+    const message = {
+      data: body.data,
+      tokens: body.registrationTokens,
+    };
+
+    admin
+      .messaging()
+      .sendMulticast(message)
+      .then((response) => {
+        if (response.failureCount > 0) {
+          const failedTokens = [];
+          response.responses.forEach((resp, idx) => {
+            if (!resp.success) {
+              failedTokens.push(message.tokens[idx]);
+            }
+          });
+          message.tokens = failedTokens;
+          admin.messaging().sendMulticast(message);
+        }
+      });
   }
 
   async markAsRead(id: number) {

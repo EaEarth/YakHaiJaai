@@ -18,7 +18,6 @@ export class UserService {
   constructor(
     @InjectRepository(User) private readonly repo: Repository<User>,
     @InjectRepository(FcmToken) private readonly fcmRepo: Repository<FcmToken>,
-    private appService: AppService,
     private fileService: FileItemService,
   ) {}
 
@@ -53,15 +52,44 @@ export class UserService {
       var tokenEntity = await this.fcmRepo.findOne({
         where: { token: fcmToken },
       });
-      if (!tokenEntity) tokenEntity = await this.storeFcmToken(fcmToken);
+      if (!tokenEntity)
+        tokenEntity = await this.storeFcmToken(undefined, fcmToken);
       userInfo.fcmTokens.push(tokenEntity);
     }
     return this.repo.save(userInfo);
   }
 
-  async storeFcmToken(token): Promise<FcmToken> {
+  async storeFcmToken(uid, token): Promise<FcmToken> {
+    const fcmToken = await this.fcmRepo.findOne({
+      where: { token: token },
+    });
+    var user;
+    if (fcmToken) {
+      if (uid) {
+        user = await this.repo.findOne(uid);
+        if (user) {
+          var userExists = false;
+          for (var i = 0; i < fcmToken.users.length; ++i) {
+            if (fcmToken.users[i].uid === uid) {
+              userExists = true;
+              break;
+            }
+          }
+          if (userExists) return fcmToken;
+          fcmToken.users.push(user);
+        } else throw new NotFoundException('user not found');
+      }
+      return fcmToken;
+    }
     const tokenEntity = new FcmToken();
     tokenEntity.token = token;
+    tokenEntity.users = [];
+    if (uid) {
+      if (user) user = await this.repo.findOne(uid);
+      if (user) {
+        tokenEntity.users.push(user);
+      } else throw new NotFoundException('user not found');
+    }
     return this.fcmRepo.save(tokenEntity);
   }
 
@@ -94,7 +122,8 @@ export class UserService {
         var tokenEntity = await this.fcmRepo.findOne({
           where: { token: fcmToken },
         });
-        if (!tokenEntity) tokenEntity = await this.storeFcmToken(fcmToken);
+        if (!tokenEntity)
+          tokenEntity = await this.storeFcmToken(undefined, fcmToken);
         newUserInfo.fcmTokens.push(tokenEntity);
       }
     }

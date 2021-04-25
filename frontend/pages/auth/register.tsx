@@ -165,7 +165,7 @@ export const Register = (props) => {
       lastname: profile.lastname,
       phoneNumber: profile.phoneNumber,
       avatarId: pict?.id || null,
-      token: null,
+      fcmToken: null,
     }
     if (pict != null) {
       await systemStore.uploadFile(pict)
@@ -188,11 +188,13 @@ export const Register = (props) => {
                   })
                   .then((currentToken) => {
                     if (currentToken) {
-                      payload.token = currentToken
+                      payload.fcmToken = currentToken
+                      register(payload, idToken)
                     } else {
                       console.log(
                         'No registration token available. Request permission to generate one.'
                       )
+                      register(payload, idToken)
                     }
                   })
                   .catch((err) => {
@@ -200,27 +202,46 @@ export const Register = (props) => {
                       'An error occurred while retrieving token. ',
                       err
                     )
+                    register(payload, idToken)
                   })
               })
               .catch(function (err) {
                 console.log('Unable to get permission to notify.', err)
+                register(payload, idToken)
               })
           }
-          axios
-            .post('http://localhost:8000/api/user', payload, {
-              headers: {
-                authtoken: idToken,
-              },
-            })
-            .then((response) => {
-              if (response.status === 201) {
-                router.push('/')
-              }
-            })
-            .catch((err) => {
-              console.log(err)
-            })
         })
+      })
+      .catch(function (err) {
+        setRequired((prevRequired) => ({
+          ...prevRequired,
+          email: 'Email already exists.',
+        }))
+      })
+  }
+
+  const register = (payload, token) => {
+    axios
+      .post('http://localhost:8000/api/user', payload, {
+        headers: {
+          authtoken: token,
+        },
+      })
+      .then((response) => {
+        if (response.status === 201) {
+          router.push('/')
+        } else {
+          setRequired((prevRequired) => ({
+            ...prevRequired,
+            username: 'Username already exists.',
+          }))
+        }
+      })
+      .catch((err) => {
+        setRequired((prevRequired) => ({
+          ...prevRequired,
+          username: 'Username already exists.',
+        }))
       })
   }
 

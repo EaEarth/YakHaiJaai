@@ -14,14 +14,45 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBell, faUserCircle } from '@fortawesome/free-solid-svg-icons'
 import { useRouter } from 'next/router'
 import { useRootStore } from '../../stores/stores'
-import { auth } from '../../src/firebase'
-import { useEffect } from 'react'
+import { auth, firebase } from '../../src/firebase'
+import { useEffect, useState } from 'react'
 import axios from 'axios'
 import styles from '../Homepage/homepage.module.scss'
 
 export const NavBar = observer((props) => {
   const router = useRouter()
   const authStore = useRootStore().authStore
+  const notificationStore = useRootStore().notificationStore
+
+  var messaging
+  if (process.browser) {
+    messaging = firebase.messaging()
+    messaging.onMessage((payload) => {
+      const message = {
+        title: payload.data.title,
+        description: payload.data.description,
+        id: payload.data.id,
+      }
+      const noti = notificationStore.getNotifications
+      noti.unshift(message)
+      notificationStore.setNotifications(noti)
+      notificationStore.setNotificationCount(
+        notificationStore.notificationCount + 1
+      )
+    })
+  }
+  const notification = notificationStore.notifications.map((noti) => (
+    <NavDropdown.Item key={noti.id} href="#action/3.1">
+      <Col className={`p-0`}>
+        <Row>
+          <Col className={`${styles['nav-title']}`}>{noti.title}</Col>
+        </Row>
+        <Row>
+          <Col className={`${styles['nav-item']}`}>{noti.description}</Col>
+        </Row>
+      </Col>
+    </NavDropdown.Item>
+  ))
 
   const handleRegisterClick = (e) => {
     router.push('/auth/register')
@@ -35,6 +66,19 @@ export const NavBar = observer((props) => {
     e.preventDefault()
     auth.signOut().then((response) => {
       authStore.setUser(null)
+    })
+  }
+
+  const handleToggleNotification = (e) => {
+    notificationStore.setNotificationCount(0)
+    auth.currentUser.getIdToken(true).then((idToken) => {
+      const instance = axios.create({
+        baseURL: 'http://localhost:8000/api',
+        headers: { authtoken: idToken },
+      })
+      instance.patch('/notification/readAll').catch((error) => {
+        console.error(error)
+      })
     })
   }
 
@@ -58,6 +102,16 @@ export const NavBar = observer((props) => {
           .then(function (response) {
             authStore.setUserInfo(response.data)
           })
+        axios
+          .get(`http://localhost:8000/api/notification/current-user/unreaded`, {
+            headers: {
+              authtoken: idToken,
+            },
+          })
+          .then(function (response) {
+            notificationStore.setNotifications(response.data)
+            notificationStore.setNotificationCount(response.data.length)
+          })
       })
     } else {
       authStore.setUserInfo(null)
@@ -70,6 +124,7 @@ export const NavBar = observer((props) => {
       <Nav className="mr-auto"></Nav>
       {authStore.isLoggedIn && (
         <NavDropdown
+          onClick={handleToggleNotification}
           className="left-aligned"
           title={
             <>
@@ -79,28 +134,15 @@ export const NavBar = observer((props) => {
                 variant="danger"
                 style={{ position: 'absolute', top: '-0.3em', left: '2.2em' }}
               >
-                100
+                {notificationStore.notificationCount
+                  ? notificationStore.notificationCount
+                  : ''}
               </Badge>
             </>
           }
           id="collasible-nav-dropdown"
         >
-          <NavDropdown.Item href="#action/3.1">
-            <Col className="p-0">
-              <Row>
-                <Col className={`${styles['nav-title']}`}>Yayoi restaurant</Col>
-              </Row>
-              <Row>
-                <Col className={`${styles['nav-item']}`}>New Bill</Col>
-              </Row>
-            </Col>
-          </NavDropdown.Item>
-          <NavDropdown.Divider />
-          <NavDropdown.Item href="#action/3.2">Another action</NavDropdown.Item>
-          <NavDropdown.Item href="#action/3.3">Something</NavDropdown.Item>
-          <NavDropdown.Divider />
-          <NavDropdown.Item href="#action/3.4">Separated link</NavDropdown.Item>
-          <NavDropdown.Divider />
+          {notification}
         </NavDropdown>
       )}
       {!authStore.isLoggedIn && (

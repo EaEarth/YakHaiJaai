@@ -9,6 +9,7 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
+import { FcmToken } from 'entities/users/fcmToken.entity';
 import { User } from 'entities/users/user.entity';
 import { storeUserInfo } from './dto/storeUserInfo.dto';
 import { updateUserInfo } from './dto/updateUserInfo.dto';
@@ -49,8 +50,8 @@ export class UserController {
   }
 
   @Post()
-  storeFcmToken(@Request() req, @Body() dto: storeUserInfo): Promise<User> {
-    return this.service.storeUserInfo(req.headers.authtoken, dto);
+  storeFcmToken(@Request() req, @Body() fcmToken): Promise<FcmToken> {
+    return this.service.storeFcmToken(req.headers.authtoken, fcmToken.token);
   }
 
   @Patch()

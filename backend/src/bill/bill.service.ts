@@ -96,6 +96,7 @@ export class BillService {
       .createQueryBuilder('bill')
       .where('bill.id = :id', { id: id })
       .leftJoinAndSelect('bill.participants', 'participants')
+      .leftJoinAndSelect('participants.fcmTokens', 'token')
       .leftJoinAndSelect('bill.qrCode', 'qrCode')
       .leftJoinAndSelect('bill.items', 'items')
       .leftJoinAndSelect('items.payers', 'payers')

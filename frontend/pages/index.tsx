@@ -9,6 +9,7 @@ import { auth, firebase } from '../src/firebase'
 import BillGrid from '../components/Homepage/Grid'
 import { useRouter } from 'next/router'
 import dotenv from 'dotenv'
+import { useRootStore } from '../stores/stores'
 
 export const Home = (props) => {
   const [bills, setbills] = useState(props.bills)
