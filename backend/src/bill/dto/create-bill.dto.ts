@@ -6,10 +6,10 @@ export class createBill {
   readonly title: string;
 
   @IsOptional()
-  readonly itemLists: number[];
+  readonly itemLists: any[];
 
   @IsOptional()
-  readonly participants: number[];
+  readonly participants: string[];
 
   @IsOptional()
   @IsNumber()

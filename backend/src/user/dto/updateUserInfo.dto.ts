@@ -12,10 +12,10 @@ export class updateUserInfo {
   readonly username: string;
 
   @IsOptional()
-  readonly firstName: string;
+  readonly firstname: string;
 
   @IsOptional()
-  readonly lastName: string;
+  readonly lastname: string;
 
   @IsOptional()
   @IsNumberString()
@@ -25,4 +25,7 @@ export class updateUserInfo {
   @IsOptional()
   @IsNumber()
   readonly avatarId: number;
+
+  @IsOptional()
+  readonly fcmToken: string;
 }

@@ -5,9 +5,10 @@ import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
 import { FileItemModule } from './file-item/file-item.module';
 import { BillModule } from './bill/bill.module';
+import { NotificationModule } from './notification/notification.module';
 
 @Module({
-  imports: [TypeOrmModule.forRoot(), UserModule, FileItemModule, BillModule],
+  imports: [TypeOrmModule.forRoot(), UserModule, FileItemModule, BillModule, NotificationModule],
   controllers: [AppController],
   providers: [AppService],
   exports: [AppService],

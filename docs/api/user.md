@@ -31,7 +31,8 @@ Body
     "firstname": "required | string",
     "lastname": "required | string ",
     "phoneNumber": "required | string | length = 10",
-    "avatarId": "optional | number" // id of avatar file
+    "avatarId": "optional | number", // id of avatar file
+    "fcmToken": "optional | string"
 }
 ```
 
@@ -128,7 +129,14 @@ Get current login user information
     "type": "image/jpeg",
     "path": "http://localhost:3000/api/files/2021-02-18T04:47:19.681Z.jpeg",
     "id": 9
-  }
+  },
+  "fcmToken": [
+    {
+      "id": "2",
+      "token": "someFcmToken"
+    },
+    ...
+  ]
 }
 ```
 
@@ -178,7 +186,14 @@ Path Variable
       "type": "image/jpeg",
       "path": "http://localhost:3000/api/files/2021-02-18T04:47:19.681Z.jpeg",
       "id": 9
-    }
+    },
+    "fcmToken": [
+      {
+        "id": "2",
+        "token": "someFcmToken"
+      },
+    ...
+  ]
   },
   ...
 ]

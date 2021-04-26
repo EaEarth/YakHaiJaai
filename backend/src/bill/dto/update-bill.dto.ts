@@ -6,10 +6,10 @@ export class updateBill {
   readonly title: string;
 
   @IsOptional()
-  readonly itemLists: number[];
+  readonly itemLists: any[];
 
   @IsOptional()
-  readonly participants: number[];
+  readonly participants: string[];
 
   @IsOptional()
   @IsNumber()

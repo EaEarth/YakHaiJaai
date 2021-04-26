@@ -9,6 +9,7 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
+import { FcmToken } from 'entities/users/fcmToken.entity';
 import { User } from 'entities/users/user.entity';
 import { storeUserInfo } from './dto/storeUserInfo.dto';
 import { updateUserInfo } from './dto/updateUserInfo.dto';
@@ -33,6 +34,11 @@ export class UserController {
     return this.service.getUserInfoByToken(req.headers.authtoken);
   }
 
+  @Get('search/:username')
+  async getUserByUsername(@Param('username') username: string): Promise<User> {
+    return this.service.getUserFromUsername(username);
+  }
+
   @Get('search/:name')
   async searchUserByName(
     @Param('name') name: string,
@@ -48,11 +54,21 @@ export class UserController {
     return this.service.storeUserInfo(req.headers.authtoken, dto);
   }
 
+  @Post('token')
+  storeFcmToken(@Request() req, @Body() fcmToken): Promise<FcmToken> {
+    return this.service.storeFcmToken(req.headers.authtoken, fcmToken.token);
+  }
+
+  @Patch('token')
+  logInOrOutToken(@Body() tokenInfo) {
+    return this.service.logInOrOutToken(tokenInfo);
+  }
+
   @Patch()
   @UsePipes(new ValidationPipe({ whitelist: true }))
   updateUserInfo(@Request() req, @Body() dto: updateUserInfo): Promise<User> {
     for (const [key, value] of Object.entries(dto)) {
-      if (value == null || value === '') {
+      if (!value || value === null || value === '') {
         delete dto[key];
       }
     }

@@ -3,11 +3,11 @@ import ParticipantBar from './ParticipantBar';
 import ParticipantInfo from './ParticipantInfo';
 
 
-export const Participant =() =>{
+export const Participant =(props) =>{
     return(
         <>
             <ParticipantBar/>
-            <ParticipantInfo/>
+            <ParticipantInfo participants={props.participants}/>
         </>
     )
 }

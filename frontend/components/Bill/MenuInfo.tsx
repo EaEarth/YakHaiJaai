@@ -1,18 +1,20 @@
 import { Container, Row, Form, Col, Nav, Tabs, Tab, Badge, Button } from 'react-bootstrap';
+import styles from './billpage.module.scss';
+import Payer from './Payer'
 
-export const MenuInfo=() => {
+export const MenuInfo=(props) => {
+
+  const items = props.list.map((item) => (
+    <Row className="">
+        <Col md={4}><p className="small m-0">{item.name}</p></Col>
+        <Col md={4}><p className="small m-0">{item.price}</p></Col>
+        <Col md={4}><p className="small m-0">{item.perPerson}</p></Col>
+        <Payer payerList={item.payer}></Payer>
+    </Row>
+  ))
     return(
         <>
-        <Row>
-        <Col md={{span: 3, offset: 0}}><p className="small">Hotdog</p></Col>
-        <Col md={{span: 4, offset: 1}}><p className="small">100</p></Col>
-        <Col md={{span: 3, offset: 1}}><p className="small">50</p></Col>
-        <Row>
-        <Col md={{span: 2, offset: 2}}>
-          <Badge variant="primary">Earth</Badge>{' '}
-        </Col>
-      </Row>
-      </Row>
+        {items}
       </>
     );
 }

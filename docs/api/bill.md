@@ -30,6 +30,7 @@ Body
     "title": "required | string",
     "itemLists": "optional | number[] | Array of item id",
     "participants": "optional | number[] | Array of user's uid",
+    "promptPay": "optional | string"
     "qrCodeFileId": "optional | number | qrCode file id"
 }
 ```
@@ -40,6 +41,7 @@ Body
 {
   "id": 1,
   "title": "Bill Example",
+  "promptPay": "1111111111",
   "createdAt": "2021-03-14T06:35:21.740Z",
   "updatedAt": "2021-03-14T06:35:21.740Z"
 }

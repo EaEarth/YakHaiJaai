@@ -25,8 +25,8 @@ export class BillService {
     bill.participants = [];
     bill.items = [];
     if (itemLists) {
-      itemLists.forEach(async (itemId) => {
-        bill.items.push(await this.itemRepo.findOne(itemId));
+      itemLists.forEach(async (item) => {
+        bill.items.push(await this.createItem(item));
       });
     }
     if (participants) {
@@ -81,7 +81,7 @@ export class BillService {
     return this.itemRepo.findOne(id, { relations: ['payers', 'bill'] });
   }
 
-  async getBillByUid(uid: number): Promise<Bill[]> {
+  async getBillByUid(uid: string): Promise<Bill[]> {
     return this.billRepo
       .createQueryBuilder('bill')
       .leftJoin('bill.participants', 'participants')
@@ -96,6 +96,7 @@ export class BillService {
       .createQueryBuilder('bill')
       .where('bill.id = :id', { id: id })
       .leftJoinAndSelect('bill.participants', 'participants')
+      .leftJoinAndSelect('participants.fcmTokens', 'token')
       .leftJoinAndSelect('bill.qrCode', 'qrCode')
       .leftJoinAndSelect('bill.items', 'items')
       .leftJoinAndSelect('items.payers', 'payers')

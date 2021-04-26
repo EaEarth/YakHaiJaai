@@ -12,10 +12,11 @@ import {
   Row,
 } from 'react-bootstrap'
 import DefaultLayout from '../../layouts/Default'
-import { auth } from '../../src/firebase'
+import { auth, firebase } from '../../src/firebase'
 import { useRootStore } from '../../stores/stores'
+import axios from 'axios'
 
-export const login = observer((prop) => {
+export const Login = observer((prop) => {
   const router = useRouter()
   const authStore = useRootStore().authStore
   const [state, setState] = useState({
@@ -26,11 +27,11 @@ export const login = observer((prop) => {
   const [loginUser, setLoginUser] = useState(null)
 
   useEffect(() => {
-    if (loginUser) router.push('/home')
+    if (loginUser) router.push('/')
   }, [loginUser])
 
   useEffect(() => {
-    if (authStore.user) router.push('/home')
+    if (authStore.user) router.push('/')
   }, [authStore.user])
 
   const handleSubmitClick = (e) => {
@@ -40,10 +41,60 @@ export const login = observer((prop) => {
 
     auth
       .signInWithEmailAndPassword(email, password)
-      .then((response) => {
+      .then(async (response) => {
         setLoginUser((prevState) => response.user)
         authStore.setUser(response.user)
-        router.push('/home')
+        await auth.currentUser.getIdToken(true).then(async (idToken) => {
+          var messaging
+          if (process.browser) {
+            messaging = firebase.messaging()
+            await messaging
+              .requestPermission()
+              .then(function () {
+                console.log('Notification permission granted.')
+                messaging
+                  .getToken({
+                    vapidKey: process.env.NEXT_PUBLIC_VAPID_KEY,
+                  })
+                  .then((currentToken) => {
+                    if (currentToken) {
+                      const payload = { fcmToken: currentToken }
+                      axios
+                        .patch('http://localhost:8000/api/user', payload, {
+                          headers: {
+                            authtoken: idToken,
+                          },
+                        })
+                        .then((response) => {
+                          if (response.status === 200) {
+                            router.push('/')
+                          }
+                        })
+                        .catch((err) => {
+                          console.log(err)
+                        })
+                    } else {
+                      console.log(
+                        'No registration token available. Request permission to generate one.'
+                      )
+                      router.push('/')
+                    }
+                  })
+                  .catch((err) => {
+                    console.log(
+                      'An error occurred while retrieving token. ',
+                      err
+                    )
+                    router.push('/')
+                  })
+              })
+              .catch(function (err) {
+                console.log('Unable to get permission to notify.', err)
+                router.push('/')
+              })
+          }
+        })
+        router.push('/')
       })
       .catch((error) => {
         setState((prevState) => ({ ...prevState, error: error.message }))
@@ -99,7 +150,7 @@ export const login = observer((prop) => {
               </Row>
               <Row className="justify-content-center">
                 <span>Don't have an account?</span>
-                <Link href="/">
+                <Link href="/auth/register">
                   <a className="ml-2">Register</a>
                 </Link>
               </Row>
@@ -111,4 +162,4 @@ export const login = observer((prop) => {
   )
 })
 
-export default login
+export default Login

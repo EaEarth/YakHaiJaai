@@ -24,4 +24,7 @@ export class storeUserInfo {
   @IsOptional()
   @IsNumber()
   readonly avatarId: number;
+
+  @IsOptional()
+  readonly fcmToken: string;
 }

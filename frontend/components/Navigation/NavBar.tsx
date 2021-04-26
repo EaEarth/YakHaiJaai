@@ -1,4 +1,12 @@
-import { Badge, Button, Form, FormControl, NavDropdown } from 'react-bootstrap'
+import {
+  Badge,
+  Button,
+  Col,
+  Form,
+  FormControl,
+  NavDropdown,
+  Row,
+} from 'react-bootstrap'
 import Nav from 'react-bootstrap/Nav'
 import Navbar from 'react-bootstrap/Navbar'
 import { observer } from 'mobx-react-lite'
@@ -6,26 +14,103 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBell, faUserCircle } from '@fortawesome/free-solid-svg-icons'
 import { useRouter } from 'next/router'
 import { useRootStore } from '../../stores/stores'
-import { auth } from '../../src/firebase'
-import { useEffect } from 'react'
+import { auth, firebase } from '../../src/firebase'
+import { useEffect, useState } from 'react'
 import axios from 'axios'
+import styles from '../Homepage/homepage.module.scss'
 
 export const NavBar = observer((props) => {
   const router = useRouter()
   const authStore = useRootStore().authStore
+  const notificationStore = useRootStore().notificationStore
+
+  var messaging
+  if (process.browser) {
+    messaging = firebase.messaging()
+    messaging.onMessage((payload) => {
+      const message = {
+        title: payload.data.title,
+        description: payload.data.description,
+        id: payload.data.id,
+      }
+      const noti = notificationStore.getNotifications
+      noti.unshift(message)
+      notificationStore.setNotifications(noti)
+      notificationStore.setNotificationCount(
+        notificationStore.notificationCount + 1
+      )
+    })
+  }
+  const notification = notificationStore.notifications.map((noti) => (
+    <NavDropdown.Item key={noti.id} href="#action/3.1">
+      <Col className={`p-0`}>
+        <Row>
+          <Col className={`${styles['nav-title']}`}>{noti.title}</Col>
+        </Row>
+        <Row>
+          <Col className={`${styles['nav-item']}`}>{noti.description}</Col>
+        </Row>
+      </Col>
+    </NavDropdown.Item>
+  ))
 
   const handleRegisterClick = (e) => {
-    router.push('/')
+    router.push('/auth/register')
   }
 
   const handleLoginClick = (e) => {
     router.push('/auth/login')
   }
 
-  const handleLogoutClick = (e) => {
+  const handleLogoutClick = async (e) => {
     e.preventDefault()
+    var messaging
+    if (process.browser) {
+      messaging = firebase.messaging()
+      await messaging
+        .requestPermission()
+        .then(function () {
+          console.log('Notification permission granted.')
+          messaging
+            .getToken({
+              vapidKey: process.env.NEXT_PUBLIC_VAPID_KEY,
+            })
+            .then((currentToken) => {
+              if (currentToken) {
+                axios.patch('http://localhost:8000/api/user/token', {
+                  token: currentToken,
+                  isLogin: false,
+                })
+              } else {
+                console.log(
+                  'No registration token available. Request permission to generate one.'
+                )
+              }
+            })
+            .catch((err) => {
+              console.log('An error occurred while retrieving token. ', err)
+            })
+        })
+        .catch(function (err) {
+          console.log('Unable to get permission to notify.', err)
+        })
+    }
     auth.signOut().then((response) => {
       authStore.setUser(null)
+      router.push('/')
+    })
+  }
+
+  const handleToggleNotification = (e) => {
+    notificationStore.setNotificationCount(0)
+    auth.currentUser.getIdToken(true).then((idToken) => {
+      const instance = axios.create({
+        baseURL: 'http://localhost:8000/api',
+        headers: { authtoken: idToken },
+      })
+      instance.patch('/notification/readAll').catch((error) => {
+        console.error(error)
+      })
     })
   }
 
@@ -49,6 +134,16 @@ export const NavBar = observer((props) => {
           .then(function (response) {
             authStore.setUserInfo(response.data)
           })
+        axios
+          .get(`http://localhost:8000/api/notification/current-user/unreaded`, {
+            headers: {
+              authtoken: idToken,
+            },
+          })
+          .then(function (response) {
+            notificationStore.setNotifications(response.data)
+            notificationStore.setNotificationCount(response.data.length)
+          })
       })
     } else {
       authStore.setUserInfo(null)
@@ -61,6 +156,7 @@ export const NavBar = observer((props) => {
       <Nav className="mr-auto"></Nav>
       {authStore.isLoggedIn && (
         <NavDropdown
+          onClick={handleToggleNotification}
           className="left-aligned"
           title={
             <>
@@ -70,17 +166,15 @@ export const NavBar = observer((props) => {
                 variant="danger"
                 style={{ position: 'absolute', top: '-0.3em', left: '2.2em' }}
               >
-                100
+                {notificationStore.notificationCount
+                  ? notificationStore.notificationCount
+                  : ''}
               </Badge>
             </>
           }
           id="collasible-nav-dropdown"
         >
-          <NavDropdown.Item href="#action/3.1">Action</NavDropdown.Item>
-          <NavDropdown.Item href="#action/3.2">Another action</NavDropdown.Item>
-          <NavDropdown.Item href="#action/3.3">Something</NavDropdown.Item>
-          <NavDropdown.Divider />
-          <NavDropdown.Item href="#action/3.4">Separated link</NavDropdown.Item>
+          {notification}
         </NavDropdown>
       )}
       {!authStore.isLoggedIn && (
@@ -94,7 +188,11 @@ export const NavBar = observer((props) => {
         </Nav.Link>
       )}
       {authStore.isLoggedIn && (
-        <Button>
+        <Button
+          onClick={() => {
+            router.push('/auth/edit')
+          }}
+        >
           <FontAwesomeIcon icon={faUserCircle} size="lg" />{' '}
           {authStore.userInfo.username}
         </Button>

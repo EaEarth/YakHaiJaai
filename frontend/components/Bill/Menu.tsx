@@ -9,11 +9,12 @@ export type BillMenu = {
 	price: string
 };
 
-export const Menu =() => {
+export const Menu =(props) => {
+    console.log(props)
     return(
         <>
             <MenuBar/>
-            <MenuInfo/>
+            <MenuInfo list={props.list}/>
         </>
     );
 }

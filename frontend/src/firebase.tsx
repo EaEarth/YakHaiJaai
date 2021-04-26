@@ -1,5 +1,6 @@
 import firebase from 'firebase/app'
 import 'firebase/auth'
+import 'firebase/messaging'
 import dotenv from 'dotenv'
 
 if (!firebase.apps.length) {
@@ -18,5 +19,4 @@ if (!firebase.apps.length) {
 }
 
 const auth = firebase.auth()
-
 export { auth, firebase }

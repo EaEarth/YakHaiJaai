@@ -11,5 +11,6 @@ import { BillService } from './bill.service';
   imports: [TypeOrmModule.forFeature([Bill, Item]), UserModule, FileItemModule],
   controllers: [BillController],
   providers: [BillService],
+  exports: [BillService],
 })
 export class BillModule {}

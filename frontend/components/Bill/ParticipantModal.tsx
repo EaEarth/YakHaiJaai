@@ -7,12 +7,13 @@ import axios from 'axios';
 import styles from './modal.module.scss';
 
 export const ParticipantModal = (props) => {
-
+  const [payer, setPayer] = useState([]);
   const name = [
     { value: 'chocolate', label: 'Chocolate' },
     { value: 'strawberry', label: 'Strawberry' },
     { value: 'vanilla', label: 'Vanilla' }
   ]
+  
   const handleAdd =(e)=>{
     e.preventDefault();
     console.log("Add");
@@ -36,18 +37,17 @@ export const ParticipantModal = (props) => {
         <Row>
             <Col>
               <Form>
-                <Form.Group>
-                  <Form.Label className={styles.label}>Name :</Form.Label>
+              <Form.Group>
+                  <Form.Label className={styles.label}>Participant :</Form.Label>
                   <Select
                     isMulti
-                    value={name}
-                    // options={jobTypes.length >= 3 ? jobTypes : tags}
+                    value={payer}
+                    options={name}
                     className="basic-multi-select "
                     classNamePrefix="select"
-                    // onChange={(e) => setJobTypes(e)}
+                    onChange={(e) => setPayer(e)}
                   />
                 </Form.Group>
-
 
                 <Col md={{span:3, offset:5}}><Button size="sm"variant="dark" onClick={handleAdd}><Link href="/bill">
                 Add</Link></Button>{' '}</Col>
