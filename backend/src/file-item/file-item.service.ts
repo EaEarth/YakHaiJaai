@@ -47,9 +47,9 @@ export class FileItemService {
       newFile.avatarUser = user;
     }
 
-    newFile.title = dto.title ? dto.title : file.originalname;
+    newFile.title = dto.title ? dto.title : file.filename;
     newFile.type = file.mimetype;
-    newFile.path = `${req.protocol}://${req.headers.host}/api/file-item/${file.originalname}`;
+    newFile.path = `${req.protocol}://${req.headers.host}/api/file-item/${file.filename}`;
 
     return this.repo.save(newFile);
   }

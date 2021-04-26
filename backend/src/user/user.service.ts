@@ -36,6 +36,10 @@ export class UserService {
     return user;
   }
 
+  getUserFromUsername(username): Promise<User> {
+    return this.repo.findOne({ where: { username: username } });
+  }
+
   async storeUserInfo(token, dto: storeUserInfo): Promise<User> {
     const { fcmToken, avatarId, ...info } = dto;
     const user = await this.getUserFromToken(token);
@@ -52,8 +56,12 @@ export class UserService {
       var tokenEntity = await this.fcmRepo.findOne({
         where: { token: fcmToken },
       });
-      if (!tokenEntity)
+      if (!tokenEntity) {
         tokenEntity = await this.storeFcmToken(undefined, fcmToken);
+      } else {
+        tokenEntity.isLogIn = true;
+        tokenEntity = await this.fcmRepo.save(tokenEntity);
+      }
       userInfo.fcmTokens.push(tokenEntity);
     }
     return this.repo.save(userInfo);
@@ -84,6 +92,7 @@ export class UserService {
     const tokenEntity = new FcmToken();
     tokenEntity.token = token;
     tokenEntity.users = [];
+    tokenEntity.isLogIn = true;
     if (uid) {
       if (user) user = await this.repo.findOne(uid);
       if (user) {
@@ -124,6 +133,10 @@ export class UserService {
         });
         if (!tokenEntity)
           tokenEntity = await this.storeFcmToken(undefined, fcmToken);
+        else {
+          tokenEntity.isLogIn = true;
+          tokenEntity = await this.fcmRepo.save(tokenEntity);
+        }
         newUserInfo.fcmTokens.push(tokenEntity);
       }
     }
@@ -147,5 +160,15 @@ export class UserService {
 
   findById(id: string): Promise<User> {
     return this.repo.findOne(id);
+  }
+
+  async logInOrOutToken(tokenInfo): Promise<FcmToken> {
+    var token = await this.fcmRepo.findOne({
+      where: { token: tokenInfo.token },
+    });
+    if (!token)
+      throw new NotFoundException('Token not found, please create one first');
+    token.isLogIn = tokenInfo.isLogIn;
+    return this.fcmRepo.save(token);
   }
 }

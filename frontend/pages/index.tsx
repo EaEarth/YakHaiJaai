@@ -12,7 +12,8 @@ import dotenv from 'dotenv'
 import { useRootStore } from '../stores/stores'
 
 export const Home = (props) => {
-  const [bills, setbills] = useState(props.bills)
+  const [bills, setbills] = useState([])
+  const [firstTime, setFirstTime] = useState(true)
   const router = useRouter()
   var messaging
   if (process.browser) {
@@ -21,6 +22,27 @@ export const Home = (props) => {
       console.log('Unable to get permission to notify.', err)
     })
   }
+
+  auth.onAuthStateChanged(async (user) => {
+    if (user) {
+      if (firstTime) {
+        const token = await user.getIdToken(true)
+        const response = await axios.get(
+          `http://localhost:8000/api/bill/list`,
+          {
+            headers: {
+              authtoken: token,
+            },
+          }
+        )
+        setbills(response.data)
+        setFirstTime(false)
+      }
+    } else {
+      setbills([])
+    }
+  })
+
   return (
     <DefaultLayout>
       <Head>
@@ -46,27 +68,6 @@ export const Home = (props) => {
       </Jumbotron>
     </DefaultLayout>
   )
-}
-
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const user = auth.currentUser
-  var bills
-  if (user) {
-    const token = user.getIdToken(true)
-    bills = await axios.get(`http://localhost:8000/api/bill/list`, {
-      headers: {
-        authtoken: token,
-      },
-    })
-  } else {
-    bills = []
-  }
-
-  return {
-    props: {
-      bills: bills,
-    },
-  }
 }
 
 export default Home

@@ -23,6 +23,9 @@ export class Bill {
   @Column()
   title: string;
 
+  @Column()
+  promptPay: string;
+
   @CreateDateColumn()
   createdAt: Date;
 

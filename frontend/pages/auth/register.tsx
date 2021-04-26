@@ -32,6 +32,8 @@ export const Register = (props) => {
     password: '',
     confirmedPassword: '',
   })
+  const [token, setToken] = useState(null)
+  const [fcmToken, setFcmToken] = useState(null)
 
   useEffect(() => {
     if (pict !== null) {
@@ -54,6 +56,13 @@ export const Register = (props) => {
         setRequired((prevRequired) => ({
           ...prevRequired,
           confirmedPassword: '',
+        }))
+      }
+    } else if (id === 'username') {
+      if (required[id] === 'Username already exists.') {
+        setRequired((prevRequired) => ({
+          ...prevRequired,
+          username: '',
         }))
       }
     } else if (id === 'password') {
@@ -101,6 +110,15 @@ export const Register = (props) => {
   const handleSubmitClick = async (e) => {
     e.preventDefault()
     let allInfo = true
+
+    if (!profile.username.length) {
+      setRequired((prevRequired) => ({
+        ...prevRequired,
+        username: '*required',
+      }))
+      allInfo = false
+    } else setRequired((prevRequired) => ({ ...prevRequired, username: '' }))
+
     if (!profile.firstname.length) {
       setRequired((prevRequired) => ({
         ...prevRequired,
@@ -157,6 +175,17 @@ export const Register = (props) => {
         ...prevRequired,
         confirmedPassword: '',
       }))
+
+    const checkUsername = await axios.get(
+      'http://localhost:8000/api/user/search/' + profile.username
+    )
+    if (checkUsername.data) {
+      setRequired((prevRequired) => ({
+        ...prevRequired,
+        username: 'Username already exists.',
+      }))
+      return
+    }
 
     if (!allInfo) return
     const payload = {
@@ -399,7 +428,7 @@ export const Register = (props) => {
               className="float-right my-2 btn btn-success"
               onClick={handleSubmitClick}
             >
-              register
+              Register
             </button>
           </Col>
           <Col>

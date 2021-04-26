@@ -62,10 +62,42 @@ export const NavBar = observer((props) => {
     router.push('/auth/login')
   }
 
-  const handleLogoutClick = (e) => {
+  const handleLogoutClick = async (e) => {
     e.preventDefault()
+    var messaging
+    if (process.browser) {
+      messaging = firebase.messaging()
+      await messaging
+        .requestPermission()
+        .then(function () {
+          console.log('Notification permission granted.')
+          messaging
+            .getToken({
+              vapidKey: process.env.NEXT_PUBLIC_VAPID_KEY,
+            })
+            .then((currentToken) => {
+              if (currentToken) {
+                axios.patch('http://localhost:8000/api/user/token', {
+                  token: currentToken,
+                  isLogin: false,
+                })
+              } else {
+                console.log(
+                  'No registration token available. Request permission to generate one.'
+                )
+              }
+            })
+            .catch((err) => {
+              console.log('An error occurred while retrieving token. ', err)
+            })
+        })
+        .catch(function (err) {
+          console.log('Unable to get permission to notify.', err)
+        })
+    }
     auth.signOut().then((response) => {
       authStore.setUser(null)
+      router.push('/')
     })
   }
 
@@ -156,7 +188,11 @@ export const NavBar = observer((props) => {
         </Nav.Link>
       )}
       {authStore.isLoggedIn && (
-        <Button>
+        <Button
+          onClick={() => {
+            router.push('/auth/edit')
+          }}
+        >
           <FontAwesomeIcon icon={faUserCircle} size="lg" />{' '}
           {authStore.userInfo.username}
         </Button>

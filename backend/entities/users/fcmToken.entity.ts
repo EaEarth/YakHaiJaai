@@ -17,6 +17,9 @@ export class FcmToken {
   @Column('varchar')
   token: string;
 
+  @Column('boolean')
+  isLogIn: boolean;
+
   @ManyToMany(() => User, (user) => user.fcmTokens)
   @JoinTable()
   users: User[];
