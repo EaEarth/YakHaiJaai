@@ -22,12 +22,6 @@ export const Bill = () => {
     promptpayId: ''
   })
   const [participants, setParticipants] = useState({})
-  const data = {
-    name: 'Bill Name',
-    totalParticipant: '20',
-    totalAmout: '500',
-    promptPayID: '098765432'
-  }
   const totalParticipant = Object.keys(participants).length;
   const [listMenu, setListMenu]= useState([]);
   const [modalShow, setModalShow] = useState(false);
@@ -43,6 +37,11 @@ export const Bill = () => {
       ...prevState,
       [id]: value,
     }))
+}
+const handleClear = () => {
+  setListMenu([])
+  setTotalPrice(0)
+  setParticipants({})
 }
   
   const handleCreatedBill = (e) =>{
@@ -177,6 +176,7 @@ export const Bill = () => {
               <Row className="my-3 justify-content-center">
                 <Col md={{span: 3, offset: 1}} ><Button size="sm"variant="dark" onClick={() => setModalShow(true) }>Add Menu</Button>{' '}</Col>
                 <Col md={{span: 3, offset: 1}}><Button size="sm"variant="primary"onClick={handleCreatedBill}>Created Bill</Button>{' '}</Col>
+                <Col md={{span: 3, offset: 1}}><Button size="sm"variant="warning"onClick={handleClear}>Clear data</Button>{' '}</Col>
                 {/* <Col md={{span: 3, offset: 1}}><Button size="sm"variant="dark" onClick={() => setModalParticipantShow(true) }>Add Participant</Button>{' '}</Col> */}
               </Row>
               </Col>
