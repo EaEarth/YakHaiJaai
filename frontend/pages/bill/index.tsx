@@ -28,6 +28,7 @@ export const Bill = () => {
     totalAmout: '500',
     promptPayID: '098765432'
   }
+  const totalParticipant = Object.keys(participants).length;
   const [listMenu, setListMenu]= useState([]);
   const [modalShow, setModalShow] = useState(false);
   const [modalParticipantShow, setModalParticipantShow] = useState(false);
@@ -146,7 +147,7 @@ export const Bill = () => {
                     <h6 className="text-center">#Participant</h6>
                   </Row>
                   <Row md={8}>
-                    <h4>{data.totalParticipant}</h4>
+                    <h4>{totalParticipant}</h4>
                   </Row>
                 </Col>
                 <Col md={{span: 5, offset: 1}}>
