@@ -52,24 +52,29 @@ export const AddMenuModal = (props) => {
       console.log("required")
       allInfo = false
     } 
-    if(allInfo){ 
+    if(allInfo){
+
       props.setListMenu((prevMenu) => {
         const nextMenu = prevMenu.slice();
         nextMenu.push(menu);
       return nextMenu;
     });
-    props.setParticipants((prevPar) => {
-      const newParticipant ={...prevPar}
-      console.log(newParticipant)
-      payer.forEach(user => {
-        if(newParticipant[user.username]){
-          newParticipant[user.username] += Math.round(price/payer.length);
-        }else{
-          newParticipant[user.username] = Math.round(price/payer.length)
-        }
+      props.setTotalPrice((prevPrice) => {
+        const newPrice = new Number(price)
+        return prevPrice+newPrice
+      })
+      props.setParticipants((prevPar) => {
+        const newParticipant ={...prevPar}
+        console.log(newParticipant)
+        payer.forEach(user => {
+          if(newParticipant[user.username]){
+            newParticipant[user.username] += Math.round(price/payer.length);
+          }else{
+            newParticipant[user.username] = Math.round(price/payer.length)
+          }
+        });
+        return newParticipant
       });
-      return newParticipant
-    });
       setMenuName('')
       setPrice('')
       setPayer([])

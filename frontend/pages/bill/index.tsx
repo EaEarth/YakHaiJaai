@@ -31,7 +31,8 @@ export const Bill = () => {
   const totalParticipant = Object.keys(participants).length;
   const [listMenu, setListMenu]= useState([]);
   const [modalShow, setModalShow] = useState(false);
-  const [modalParticipantShow, setModalParticipantShow] = useState(false);
+  const [totalPrice, setTotalPrice] = useState(0);
+  // const [modalParticipantShow, setModalParticipantShow] = useState(false);
   const notificationStore = useRootStore().notificationStore
   useEffect(() => {
     console.log(listMenu)
@@ -155,7 +156,7 @@ export const Bill = () => {
                     <h6>Total amount</h6>
                   </Row>
                   <Row md={8}>
-                    <h4>{data.totalAmout}</h4>
+                    <h4>{totalPrice}</h4>
                   </Row>
                 </Col>
               </Row>
@@ -179,7 +180,7 @@ export const Bill = () => {
                 {/* <Col md={{span: 3, offset: 1}}><Button size="sm"variant="dark" onClick={() => setModalParticipantShow(true) }>Add Participant</Button>{' '}</Col> */}
               </Row>
               </Col>
-              <AddMenuModal show={modalShow} onHide={() => setModalShow(false)} setListMenu={setListMenu} setParticipants={setParticipants}/>
+              <AddMenuModal show={modalShow} onHide={() => setModalShow(false)} setListMenu={setListMenu} setParticipants={setParticipants} setTotalPrice={setTotalPrice}/>
 
               {/* <ParticipantModal show={modalParticipantShow} onHide={() => setModalParticipantShow(false)} setParticipant={setParticipants}/> */}
           </Row>
