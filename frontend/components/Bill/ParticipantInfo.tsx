@@ -6,11 +6,10 @@ import { Container, Row, Form, Col, Nav, Tabs, Tab, Badge, Button } from 'react-
 // }
 export const ParticipantInfo =(props) =>{
     const listParticipant = [];
-    console.log(props.participants)
     for(let user in props.participants){
         let temp = {
             name:user,
-            amountToPay:props.participants[user]
+            amountToPay:props.participants[user].cost
         }
         listParticipant.push(temp)
     }

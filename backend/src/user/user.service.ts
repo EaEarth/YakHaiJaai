@@ -22,7 +22,7 @@ export class UserService {
   ) {}
 
   index() {
-    return this.repo.find();
+    return this.repo.find({relations: ["fcmTokens"]});
   }
 
   async getUserFromToken(token): Promise<any> {

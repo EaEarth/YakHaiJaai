@@ -9,7 +9,7 @@ export const MenuInfo=(props) => {
         <Col md={4}><p className="small m-0">{item.name}</p></Col>
         <Col md={4}><p className="small m-0">{item.price}</p></Col>
         <Col md={4}><p className="small m-0">{item.perPerson}</p></Col>
-        <Payer payerList={item.payer}></Payer>
+        <Payer payerList={item.payers}></Payer>
     </Row>
   ))
     return(

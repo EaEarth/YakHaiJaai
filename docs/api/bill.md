@@ -96,6 +96,7 @@ Param
                 "birthDate": "2021-11-20T02:55:58.168Z",
                 "createdAt": "2021-03-14T06:35:21.740Z",
                 "updatedAt": "2021-03-14T06:35:21.740Z",
+                "fcmTokens": [ {"id": "5", "token":44444} ]
             },
             ...
         ],
@@ -177,6 +178,7 @@ Get list of bills in which user have participated
                         "birthDate": "2021-11-20T02:55:58.168Z",
                         "createdAt": "2021-03-14T06:35:21.740Z",
                         "updatedAt": "2021-03-14T06:35:21.740Z",
+                        "fcmTokens": [ {"id": "5", "token":44444} ]
                     },
                     ...
                 ],

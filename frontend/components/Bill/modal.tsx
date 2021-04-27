@@ -10,32 +10,27 @@ import styles from './modal.module.scss';
 export const AddMenuModal = (props) => {
   const [menuName, setMenuName] = useState('');
   const [price, setPrice] = useState(null);
-  const [payer, setPayer] = useState([]);
+  const [payers, setPayer] = useState([]);
   const [required, setRequired] = useState({
     name:'',
     price:'',
-    payer:''
+    payers:''
   })
-  const name = [
-    { value: 'chocolate', label: 'arm', username:'arm' },
-    { value: 'strawberry', label: 'name', username:'name'},
-    { value: 'vanilla', label: 'earth', username:'earth' }
-  ]
+  const name = props.users
   const handleAdd =(e)=>{
     e.preventDefault();
     let allInfo = true;
     let menu = {
       name:menuName,
-      price:price,
-      payer:payer,
-      perPerson: payer.length ? Math.round(price/payer.length) : 0
+      price:Number(price),
+      payers:payers,
+      perPerson: payers.length ? Math.round(price/payers.length) : 0
     }
     if(!menuName.length){
       setRequired((prevRequired) => ({
         ...prevRequired,
         name: '*required',
       }))
-      console.log("required")
       allInfo = false
     } else{
       setRequired((prevRequired) => ({
@@ -49,7 +44,6 @@ export const AddMenuModal = (props) => {
         ...prevRequired,
         price: '*required',
       }))
-      console.log("required")
       allInfo = false
     } 
     if(allInfo){
@@ -65,14 +59,19 @@ export const AddMenuModal = (props) => {
       })
       props.setParticipants((prevPar) => {
         const newParticipant ={...prevPar}
-        console.log(newParticipant)
-        payer.forEach(user => {
+        payers.forEach(user => {
           if(newParticipant[user.username]){
-            newParticipant[user.username] += Math.round(price/payer.length);
+            newParticipant[user.username].cost += Math.round(price/payers.length);
           }else{
-            newParticipant[user.username] = Math.round(price/payer.length)
+            newParticipant[user.username] = {
+              uid: user.uid,
+              cost :Math.round(price/payers.length),
+              fcmTokens : user.fcmTokens
+            }
           }
         });
+
+
         return newParticipant
       });
       setMenuName('')
@@ -87,7 +86,7 @@ export const AddMenuModal = (props) => {
     setRequired({
       name:'',
       price:'',
-      payer:''
+      payers:''
     })
     props.onHide()
   }
@@ -145,7 +144,7 @@ export const AddMenuModal = (props) => {
                   <Select
                   
                     isMulti
-                    value={payer}
+                    value={payers}
                     options={name}
                     className="basic-multi-select "
                     classNamePrefix="select"

@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Bill } from 'entities/bills/bill.entity';
 import { Item } from 'entities/items/item.entity';
+import { User } from 'entities/users/user.entity';
 import { FileItemService } from 'src/file-item/file-item.service';
 import { UserService } from 'src/user/user.service';
 import { Repository } from 'typeorm';
@@ -19,11 +20,16 @@ export class BillService {
     private readonly fileService: FileItemService,
   ) {}
 
-  async createBill(dto: createBill): Promise<Bill> {
+  index() : Promise<Bill[]>{
+    return this.billRepo.find({relations:['participants']})
+  }
+
+  async createBill(owner:User, dto: createBill): Promise<Bill> {
     const { itemLists, participants, qrCodeFileId, ...billInfo } = dto;
     const bill = { ...new Bill(), ...billInfo };
     bill.participants = [];
     bill.items = [];
+    bill.owner = owner;
     if (itemLists) {
       itemLists.forEach(async (item) => {
         bill.items.push(await this.createItem(item));
@@ -38,27 +44,30 @@ export class BillService {
       const qrCode = await this.fileService.findById(qrCodeFileId);
       bill.qrCode = qrCode;
     }
-    return this.billRepo.save(bill);
+    return await  this.billRepo.save(bill);
   }
 
   async updateBill(id, dto: updateBill): Promise<Bill> {
     const { itemLists, participants, qrCodeFileId, ...billInfo } = dto;
     const bill = await this.getBillById(id);
+    let user = [];
     if (dto.title) bill.title = dto.title;
     if (participants) {
-      participants.forEach((uid) => {
-        this.userService.findById(uid);
+      participants.forEach(async (uid) => {
+        user.push(await this.userService.findById(uid));
       });
+      bill.participants = user
     }
     return this.billRepo.save(bill);
   }
 
   async createItem(dto: createItem): Promise<Item> {
+    console.log("Item : " + dto)
     const { payers, ...itemInfo } = dto;
     const item = { ...new Item(), ...itemInfo };
     item.payers = [];
-    payers.forEach(async (payerId) => {
-      item.payers.push(await this.userService.findById(payerId));
+    payers.forEach(async (payer) => {
+      item.payers.push(await this.userService.findById(payer.uid));
     });
     return this.itemRepo.save(item);
   }
@@ -70,8 +79,8 @@ export class BillService {
     if (dto.price) item.price = dto.price;
     if (dto.payers) {
       item.payers = [];
-      payers.forEach(async (payerId) => {
-        item.payers.push(await this.userService.findById(payerId));
+      payers.forEach(async (payer) => {
+        item.payers.push(await this.userService.findById(payer.uid));
       });
     }
     return this.itemRepo.save(item);
@@ -100,6 +109,7 @@ export class BillService {
       .leftJoinAndSelect('bill.qrCode', 'qrCode')
       .leftJoinAndSelect('bill.items', 'items')
       .leftJoinAndSelect('items.payers', 'payers')
+      .leftJoinAndSelect('payers.fcmTokens', 'fcmToken')
       .getOne();
   }
 

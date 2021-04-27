@@ -10,7 +10,6 @@ export type BillMenu = {
 };
 
 export const Menu =(props) => {
-    console.log(props)
     return(
         <>
             <MenuBar/>

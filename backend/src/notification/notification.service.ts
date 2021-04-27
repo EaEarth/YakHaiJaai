@@ -48,9 +48,9 @@ export class NotificationService {
     notification.bill = bill;
     notification.user = creator;
     await this.notificationRepo.save(notification);
-    if (!dto.usersId) return;
+    if (!usersId) return;
     var user;
-    dto.usersId.forEach(async (uid) => {
+    usersId.forEach(async (uid) => {
       if (uid !== creator.uid) {
         user = await this.userService.findById(uid);
         var notification = { ...new BillNotification(), ...info };
@@ -99,10 +99,13 @@ export class NotificationService {
       tokens: body.registrationTokens,
     };
 
+    if(!message.tokens.length) return
+
     admin
       .messaging()
       .sendMulticast(message)
       .then((response) => {
+        // console.log(response.responses)
         if (response.failureCount > 0) {
           const failedTokens = [];
           response.responses.forEach((resp, idx) => {

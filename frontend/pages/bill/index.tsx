@@ -12,7 +12,7 @@ import { auth, firebase } from '../../src/firebase'
 import axios from 'axios'
 import { useRootStore } from '../../stores/stores'
 
-export const Bill = () => {
+export const Bill = (props) => {
   const [billHolder, setBillHolder] = useState({
     title: '',
     promptpayId: ''
@@ -22,15 +22,19 @@ export const Bill = () => {
     promptpayId: ''
   })
   const [participants, setParticipants] = useState({})
+
+  // participants = {username:{
+  //                            cost : 50
+  //                            fcmTokens : [id:15 , token:.....]
+  //                            uid : uasdad
+  // }}
   const totalParticipant = Object.keys(participants).length;
   const [listMenu, setListMenu]= useState([]);
   const [modalShow, setModalShow] = useState(false);
   const [totalPrice, setTotalPrice] = useState(0);
+  var users = props.users
   // const [modalParticipantShow, setModalParticipantShow] = useState(false);
   const notificationStore = useRootStore().notificationStore
-  useEffect(() => {
-    console.log(listMenu)
-  },[listMenu] )
   const handleChange = (e) => {
     const { id, value } = e.target
     setBillHolder((prevState) => ({
@@ -63,36 +67,55 @@ const handleClear = () => {
     //   allInfo = false
     // } else setRequired((prevRequired) => ({ ...prevRequired, promptpayId: '' }))
 
+    if(!allInfo) return
+
+    var participant = []
+    var participantsToken = []
+
+    for(let user in participants){
+      participant.push(participants[user].uid)
+      participants[user].fcmTokens.forEach(token => {
+        if(token.isLogIn){
+          participantsToken.push(token.token)
+        }
+      });
+    }
+
     const payload={
       title:billHolder.title,
       promptPay:billHolder.promptpayId,
-      participants: participants,
+      participants: participant,
       itemLists: listMenu
     }
 
-    // var participantsToken = []
-    // participants.forEach(participant => {
-    //   if(participant.fcmTokens){
-    //     participant.fcmTokens.forEach(token => {
+    
+    console.log(participants)
+
+    // listMenu.forEach(user => {
+    //   if(user.fcmTokens){
+        
+    //     user.fcmTokens.forEach(token => {
     //       if(token.isLogIn){
     //         participantsToken.push(token.token)
     //       }
     //     });
     //   }
     // });
-    // const data = {
-    //   title: billHolder.title,
-    //   description: "New bill Created"
-    // }
-    // auth.currentUser.getIdToken(true).then((token) => {
-    //   axios.post('http://localhost:8000/api/bill/bill',payload,{
-    //     headers:{authtoken: token}
-    //   }).then((response)=>{
-    //     notificationStore.sendNotification(participantsToken, data)
-    //   }).catch((err)=>{
-    //     console.log(err)
-    //   })
-    // })
+    const data = {
+      title: billHolder.title,
+      description: "New bill Created"
+    }
+    console.log(payload)
+    auth.currentUser.getIdToken(true).then((token) => {
+      axios.post('http://localhost:8000/api/bill/bill',payload,{
+        headers:{authtoken: token}
+      }).then((response)=>{
+        console.log(response.data)
+        notificationStore.sendNotification(participantsToken, data)
+      }).catch((err)=>{
+        console.log(err)
+      })
+    })
   }
   
   return (
@@ -180,7 +203,7 @@ const handleClear = () => {
                 {/* <Col md={{span: 3, offset: 1}}><Button size="sm"variant="dark" onClick={() => setModalParticipantShow(true) }>Add Participant</Button>{' '}</Col> */}
               </Row>
               </Col>
-              <AddMenuModal show={modalShow} onHide={() => setModalShow(false)} setListMenu={setListMenu} setParticipants={setParticipants} setTotalPrice={setTotalPrice}/>
+              <AddMenuModal show={modalShow} onHide={() => setModalShow(false)} setListMenu={setListMenu} users={users} setParticipants={setParticipants} setTotalPrice={setTotalPrice}/>
 
               {/* <ParticipantModal show={modalParticipantShow} onHide={() => setModalParticipantShow(false)} setParticipant={setParticipants}/> */}
           </Row>
@@ -190,5 +213,29 @@ const handleClear = () => {
     </DefaultLayout>
   )
 }
+
+export async function getServerSideProps(context) {
+  const users = await axios.get(
+    `http://localhost:8000/api/user`
+  );
+  const userList = []
+  var obj = {}
+  users.data.forEach(user => {
+    obj = {
+      username : user.username,
+      uid : user.uid,
+      value : user.username,
+      label : user.username,
+      fcmTokens : user.fcmTokens
+    }
+    userList.push(obj)
+  });
+  return{
+    props:{
+      users: userList
+    }
+  }
+}
+
 
 export default Bill

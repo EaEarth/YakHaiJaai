@@ -11,6 +11,7 @@ import {
   ManyToMany,
   OneToMany,
   OneToOne,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -23,7 +24,7 @@ export class Bill {
   @Column()
   title: string;
 
-  @Column()
+  @Column({type: 'text',nullable: true})
   promptPay: string;
 
   @CreateDateColumn()
@@ -31,6 +32,9 @@ export class Bill {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @ManyToOne(() => User, (user) => user.owns)
+  owner: User;
 
   @OneToOne(() => FileItem, (file) => file.qrBill)
   @JoinColumn()

@@ -56,4 +56,7 @@ export class User {
 
   @OneToMany(() => BillNotification, (token) => token.user)
   notifications: BillNotification[];
+
+  @OneToMany(() => Bill, (bill) => bill.owner)
+  owns: Bill[];
 }
