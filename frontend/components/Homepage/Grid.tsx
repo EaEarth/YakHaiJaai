@@ -6,6 +6,7 @@ import BillCard from './bill'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faFileAlt } from '@fortawesome/free-solid-svg-icons'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 
 export type BillGridProps = {
   bills: any[]
@@ -13,6 +14,7 @@ export type BillGridProps = {
 
 export const BillGrid: React.FC<BillGridProps> = ({ bills }) => {
   const rows = []
+  const router = useRouter()
   const bill = bills.map((bill) => (
     <Col key={bill.id} className="pl-0 pr-0 pt-3" md={4}>
       <BillCard key={bill.id} {...bill} />

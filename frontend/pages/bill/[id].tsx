@@ -13,19 +13,20 @@ import { useRootStore } from '../../stores/stores'
 
 export const ViewBill = (props) => {
   const [billHolder, setBillHolder] = useState({
-    title: '',
-    promptpayId: ''
+    title: props.title,
+    promptpayId: props.promptPayId
   })
   const [required, setRequired] = useState({
     title: '',
     promptpayId: ''
   })
-  const [participants, setParticipants] = useState(props.participant);
+  const [participants, setParticipants] = useState(props.participants);
   const totalParticipant = participants ? Object.keys(participants).length : 0 ;
   const [listMenu, setListMenu]= useState(props.menu);
   const [modalShow, setModalShow] = useState(false);
-  const [totalPrice, setTotalPrice] = useState(props.totalPriceTemp);
+  const [totalPrice, setTotalPrice] = useState(props.totalPrice);
   const notificationStore = useRootStore().notificationStore
+  var users = props.users
   useEffect(() => {
     console.log(listMenu)
   },[listMenu] )
@@ -95,7 +96,8 @@ export const ViewBill = (props) => {
               <Form.Group>
                 <Form.Label>Prompt Pay ID</Form.Label>
                 <FormControl
-                  plaintext
+    
+                plaintext
                   readOnly
                   type="text"
                   id="promptpayId"
@@ -148,7 +150,7 @@ export const ViewBill = (props) => {
     
 
               </Col>
-              <AddMenuModal show={modalShow} onHide={() => setModalShow(false)} setListMenu={setListMenu} setParticipants={setParticipants} setTotalPrice={setTotalPrice}/>
+              <AddMenuModal show={modalShow} onHide={() => setModalShow(false)} setListMenu={setListMenu} users={users} setParticipants={setParticipants} setTotalPrice={setTotalPrice}/>
           </Row>
 
         </Container>
@@ -157,49 +159,25 @@ export const ViewBill = (props) => {
   )
 }
 export async function getServerSideProps(context) {
-  // const detail = await axios.get(
-  //   `http://localhost:8000/api/bill/get/${context.params.id}`
-  // );
-  const detail = {
-    data: {
-      id:1,
-      title: "Bill name",
-      promptPay: "123456",
-      items:[
-        {
-          id:1,
-          name: "item1",
-          price: 20,
-          payers: [
-            {
-              uid: "12324",
-              username: "test1",
-              fcmTokens: "12312"
-            },
-            {
-              uid: "213423",
-              username: "test2",
-              fcmTokens: "12312"
-            }
-          ]},
-        {
-          id:2,
-          name: "item2",
-          price: 50,
-          payers: [
-            {
-              uid: "12123324",
-              username: "test1",
-              fcmTokens: "12312"
-            },
-            {
-              uid: "21341223",
-              username: "test3",
-              fcmTokens: "1234"
-            }]
-        }
-      ]
-  }};
+  const detail = await axios.get(
+    `http://localhost:8000/api/bill/get/${context.params.id}`
+  );
+  const users = await axios.get(
+    `http://localhost:8000/api/user`
+  );
+  const userList = []
+  var obj = {}
+  users.data.forEach(user => {
+    obj = {
+      username : user.username,
+      uid : user.uid,
+      value : user.username,
+      label : user.username,
+      fcmTokens : user.fcmTokens
+    }
+    userList.push(obj)
+  });
+
   let participantTemp = {};
   let menutemp = detail.data.items;
   let listMenuTemp = [];
@@ -210,9 +188,11 @@ export async function getServerSideProps(context) {
     totalPriceTemp += itemList.price;
     //create participant object
     itemList.payers.forEach(item => {
+      let costTemp = Math.round(itemList.price/itemList.payers.length)
+      let oldCost = participantTemp[item.username]?.cost || 0 ;
       participantTemp[item.username] ={
         uid: item.uid,
-        cost : Math.round(itemList.price/itemList.payers.length),
+        cost : oldCost + costTemp,
         fcmTokens : item.fcmTokens
       }
     });
@@ -244,7 +224,8 @@ export async function getServerSideProps(context) {
       promptPayId: detail.data.promptPay,
       menu: listMenuTemp,
       participants: participantTemp,
-      totalPrice: totalPriceTemp
+      totalPrice: totalPriceTemp,
+      users: userList
     },
   };
 }

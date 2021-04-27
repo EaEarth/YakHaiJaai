@@ -31,7 +31,6 @@ export class BillController {
   @UsePipes(new ValidationPipe({ whitelist: true }))
   async storeBill(@Request() req, @Body() dto: createBill): Promise<Bill> {
     const user = await this.userService.getUserInfoByToken(req.headers.authtoken);
-    console.log(dto)
     return this.billService.createBill(user, dto);
   }
 
@@ -46,6 +45,11 @@ export class BillController {
   @Get('')
   async index(): Promise<Bill[]>{
     return this.billService.index()
+  }
+
+  @Get('item/index')
+  async indexItem(){
+    return this.billService.indexItem()
   }
 
   @Get('list')

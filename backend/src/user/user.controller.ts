@@ -55,8 +55,10 @@ export class UserController {
   }
 
   @Post('token')
-  storeFcmToken(@Request() req, @Body() fcmToken): Promise<FcmToken> {
-    return this.service.storeFcmToken(req.headers.authtoken, fcmToken.token);
+  async storeFcmToken(@Request() req, @Body() fcmToken): Promise<FcmToken> {
+    if(!req.headers.authtoken) return
+    const user = await this.service.getUserInfoByToken(req.headers.authtoken);
+    return this.service.storeFcmToken(user.uid, fcmToken.token);
   }
 
   @Patch('token')

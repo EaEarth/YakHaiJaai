@@ -20,31 +20,43 @@ export class BillService {
     private readonly fileService: FileItemService,
   ) {}
 
-  index() : Promise<Bill[]>{
-    return this.billRepo.find({relations:['participants']})
+  async index() : Promise<Bill[]>{
+    const bill = await this.billRepo.find({relations:['participants','items']})
+    console.log(bill)
+    return bill
   }
 
-  async createBill(owner:User, dto: createBill): Promise<Bill> {
+  async indexItem(){
+    return this.itemRepo.find({relations:["bill"]})
+  }
+
+  async createBill(user:User, dto: createBill): Promise<Bill> {
     const { itemLists, participants, qrCodeFileId, ...billInfo } = dto;
     const bill = { ...new Bill(), ...billInfo };
-    bill.participants = [];
+    bill.participants = [user];
     bill.items = [];
-    bill.owner = owner;
+    // bill.owner = owner;
+    var itemEntity
     if (itemLists) {
-      itemLists.forEach(async (item) => {
-        bill.items.push(await this.createItem(item));
-      });
+      for(const item of itemLists){
+        itemEntity = await this.createItem(item)
+        bill.items.push(itemEntity)
+      }
     }
     if (participants) {
-      participants.forEach(async (uid) => {
-        bill.participants.push(await this.userService.findById(uid));
-      });
+      let userEntity;
+      for(const uid of participants){
+        if(uid !== user.uid){
+        userEntity = await this.userService.findById(uid)
+        bill.participants.push(userEntity);
+        }
+      }
     }
     if (qrCodeFileId) {
       const qrCode = await this.fileService.findById(qrCodeFileId);
       bill.qrCode = qrCode;
     }
-    return await  this.billRepo.save(bill);
+    return this.billRepo.save(bill) 
   }
 
   async updateBill(id, dto: updateBill): Promise<Bill> {
@@ -62,13 +74,14 @@ export class BillService {
   }
 
   async createItem(dto: createItem): Promise<Item> {
-    console.log("Item : " + dto)
     const { payers, ...itemInfo } = dto;
     const item = { ...new Item(), ...itemInfo };
     item.payers = [];
-    payers.forEach(async (payer) => {
-      item.payers.push(await this.userService.findById(payer.uid));
-    });
+    var userEntity;
+    for(const payer of payers){
+      userEntity = await this.userService.findById(payer.uid)
+      item.payers.push(userEntity);
+    }
     return this.itemRepo.save(item);
   }
 
@@ -79,9 +92,11 @@ export class BillService {
     if (dto.price) item.price = dto.price;
     if (dto.payers) {
       item.payers = [];
-      payers.forEach(async (payer) => {
-        item.payers.push(await this.userService.findById(payer.uid));
-      });
+      var userEntity;
+    for(const payer of payers){
+      userEntity = await this.userService.findById(payer)
+      item.payers.push(userEntity);
+    }
     }
     return this.itemRepo.save(item);
   }

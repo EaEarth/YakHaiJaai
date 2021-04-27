@@ -11,6 +11,7 @@ import ParticipantModal from '../../components/Bill/ParticipantModal';
 import { auth, firebase } from '../../src/firebase'
 import axios from 'axios'
 import { useRootStore } from '../../stores/stores'
+import { useRouter } from 'next/router'
 
 export const Bill = (props) => {
   const [billHolder, setBillHolder] = useState({
@@ -32,6 +33,7 @@ export const Bill = (props) => {
   const [listMenu, setListMenu]= useState([]);
   const [modalShow, setModalShow] = useState(false);
   const [totalPrice, setTotalPrice] = useState(0);
+  const router = useRouter();
   var users = props.users
   // const [modalParticipantShow, setModalParticipantShow] = useState(false);
   const notificationStore = useRootStore().notificationStore
@@ -112,6 +114,7 @@ const handleClear = () => {
       }).then((response)=>{
         console.log(response.data)
         notificationStore.sendNotification(participantsToken, data)
+        router.push('/')
       }).catch((err)=>{
         console.log(err)
       })

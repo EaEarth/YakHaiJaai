@@ -12,6 +12,7 @@ import {
   OneToOne,
   PrimaryColumn,
   Unique,
+  JoinTable,
   UpdateDateColumn,
 } from 'typeorm';
 import { FcmToken } from './fcmToken.entity';

@@ -20,7 +20,7 @@ export const BillCard: React.FC<BillCardProps> = (props) => {
       <Card
         className={`${style['grid']} rounded align-items-center`}
         onClick={() => {
-          if (props.id) router.push(`/bills/${props.id}`)
+          if (props.id) router.push(`/bill/${props.id}`)
         }}
       >
         <Row noGutters className="align-items-center">

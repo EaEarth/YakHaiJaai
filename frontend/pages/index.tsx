@@ -10,8 +10,9 @@ import BillGrid from '../components/Homepage/Grid'
 import { useRouter } from 'next/router'
 import dotenv from 'dotenv'
 import { useRootStore } from '../stores/stores'
+import { observer } from 'mobx-react-lite'
 
-export const Home = (props) => {
+export const Home = observer((props) => {
   const [bills, setbills] = useState([])
   const [firstTime, setFirstTime] = useState(true)
   const authStore = useRootStore().authStore
@@ -25,6 +26,7 @@ export const Home = (props) => {
   }
 
   // auth.onAuthStateChanged(async (user) => {
+  //   console.log(user)
   //   if (user) {
   //     if (firstTime) {
   //       const token = await user.getIdToken(true)
@@ -41,11 +43,12 @@ export const Home = (props) => {
   //     }
   //   } else {
   //     setbills([])
+  //     setFirstTime(true)
   //   }
   // })
 
   useEffect(() => {
-    if (authStore.user) {
+    if (authStore.user ) {
       auth.currentUser.getIdToken(true).then((token) => {
         axios
           .get(`http://localhost:8000/api/bill/list`, {
@@ -55,13 +58,12 @@ export const Home = (props) => {
           })
           .then((response) => {
             setbills(response.data)
-            setFirstTime(false)
           })
       })
     } else {
       setbills([])
     }
-  }, [authStore.user])
+  },[authStore.user])
 
   return (
     <DefaultLayout>
@@ -88,6 +90,6 @@ export const Home = (props) => {
       </Jumbotron>
     </DefaultLayout>
   )
-}
+})
 
 export default Home
