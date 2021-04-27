@@ -6,9 +6,9 @@ export const MenuInfo=(props) => {
 
   const items = props.list.map((item) => (
     <Row className="">
-        <Col md={4}><p className="small m-0">{item.name}</p></Col>
-        <Col md={4}><p className="small m-0">{item.price}</p></Col>
-        <Col md={4}><p className="small m-0">{item.perPerson}</p></Col>
+        <Col md={4}><p className="m-0">{item.name}</p></Col>
+        <Col md={{span:3, offset:1}}><p className="m-0">{item.price}</p></Col>
+        <Col md={{span:3, offset:1}}><p className="m-0">{item.perPerson}</p></Col>
         <Payer payerList={item.payers}></Payer>
     </Row>
   ))

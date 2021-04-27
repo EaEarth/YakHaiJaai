@@ -59,16 +59,26 @@ export class BillService {
     return this.billRepo.save(bill) 
   }
 
-  async updateBill(id, dto: updateBill): Promise<Bill> {
+  async updateBill(id,user:User , dto: updateBill): Promise<Bill> {
     const { itemLists, participants, qrCodeFileId, ...billInfo } = dto;
     const bill = await this.getBillById(id);
-    let user = [];
     if (dto.title) bill.title = dto.title;
-    if (participants) {
-      participants.forEach(async (uid) => {
-        user.push(await this.userService.findById(uid));
-      });
-      bill.participants = user
+    console.log(participants)
+    if(participants){
+      bill.participants = [user]
+      for(let username in participants){
+        if(participants[username].uid !== user.uid){
+          bill.participants.push(await this.userService.findById(participants[username].uid))
+        }
+      }
+    }
+    let itemEntity
+    if (itemLists) {
+      bill.items = []
+      for(const item of itemLists){
+        itemEntity = await this.createItem(item)
+        bill.items.push(itemEntity)
+      }
     }
     return this.billRepo.save(bill);
   }
@@ -129,6 +139,10 @@ export class BillService {
   }
 
   async deleteBillById(id: number) {
+    const bill = await this.billRepo.findOne(id,{relations:["items"]})
+    for(let i = 0; i<bill.items.length; ++i){
+      await this.deleteItemById(bill.items[i].id)
+    }
     return this.billRepo.delete(id);
   }
 

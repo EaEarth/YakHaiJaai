@@ -10,6 +10,8 @@ import AddMenuModal from '../../components/Bill/modal';
 import { auth, firebase } from '../../src/firebase'
 import axios from 'axios'
 import { useRootStore } from '../../stores/stores'
+import { useRouter } from 'next/router'
+import styles from './bill.module.scss'
 
 export const ViewBill = (props) => {
   const [billHolder, setBillHolder] = useState({
@@ -27,9 +29,9 @@ export const ViewBill = (props) => {
   const [totalPrice, setTotalPrice] = useState(props.totalPrice);
   const notificationStore = useRootStore().notificationStore
   var users = props.users
-  useEffect(() => {
-    console.log(listMenu)
-  },[listMenu] )
+  const billId = props.id
+  const router = useRouter()
+
   const handleUpdateBill = (e) =>{
     e.preventDefault();
      let allInfo = true;
@@ -41,34 +43,69 @@ export const ViewBill = (props) => {
       allInfo = false
     } else setRequired((prevRequired) => ({ ...prevRequired, title: '' }))
 
-    // var participantsToken = []
-    // participants.forEach(participant => {
-    //   if(participant.fcmTokens){
-    //     participant.fcmTokens.forEach(token => {
-    //       if(token.isLogIn){
-    //         participantsToken.push(token.token)
-    //       }
-    //     });
-    //   }
-    // });
-    // const data = {
-    //   title: billHolder.title,
-    //   description: "New bill Created"
-    // }
-    // auth.currentUser.getIdToken(true).then((token) => {
-    //   axios.post('http://localhost:8000/api/bill/bill',payload,{
-    //     headers:{authtoken: token}
-    //   }).then((response)=>{
-    //     notificationStore.sendNotification(participantsToken, data)
-    //   }).catch((err)=>{
-    //     console.log(err)
-    //   })
-    // })
+    var participant = []
+    var participantsToken = []
+
+    for(let user in participants){
+      participant.push(participants[user].uid)
+      participants[user].fcmTokens.forEach(token => {
+        if(token.isLogIn){
+          participantsToken.push(token.token)
+        }
+      })};
+
+    const data = {
+      title: billHolder.title,
+      description: "Bill have been updated"
+    }
+
+    const payload={
+      title:billHolder.title,
+      promptPay:billHolder.promptpayId,
+      participants: participants,
+      itemLists: listMenu
+    }
+
+    auth.currentUser.getIdToken(true).then((token) => {
+      axios.patch(`http://localhost:8000/api/bill/bill/${billId}`,payload,{
+        headers:{authtoken: token}
+      }).then((response)=>{
+        notificationStore.sendNotification(participantsToken, data)
+        router.push('/')
+      }).catch((err)=>{
+        console.log(err)
+      })
+    })
   }
   const handleClear = () => {
     setListMenu([])
     setTotalPrice(0)
     setParticipants({})
+  }
+
+  const handleDelete = () => {
+    const data = {
+      title: billHolder.title,
+      description: "Bill have been deleted"
+    }
+    var participantsToken = []
+
+    for(let user in participants){
+      participants[user].fcmTokens.forEach(token => {
+        if(token.isLogIn){
+          participantsToken.push(token.token)
+        }
+      })};
+    auth.currentUser.getIdToken(true).then((token) => {
+      axios.delete(`http://localhost:8000/api/bill/bill/${billId}`,{
+        headers:{authtoken: token}
+      }).then((response)=>{
+        notificationStore.sendNotification(participantsToken, data)
+        router.push('/')
+      }).catch((err)=>{
+        console.log(err)
+      })
+    })
   }
   
   return (
@@ -81,7 +118,7 @@ export const ViewBill = (props) => {
           <Row>
           <Col>
               <Form.Group>
-                <Form.Label>Bill Name</Form.Label>
+                <Form.Label className={`${styles['form-label']}`}>Bill Name</Form.Label>
                 <FormControl
                   plaintext
                   readOnly
@@ -94,7 +131,7 @@ export const ViewBill = (props) => {
             </Col>
             <Col>
               <Form.Group>
-                <Form.Label>Prompt Pay ID</Form.Label>
+                <Form.Label className={`${styles['form-label']}`}>Prompt Pay ID</Form.Label>
                 <FormControl
     
                 plaintext
@@ -111,7 +148,7 @@ export const ViewBill = (props) => {
           <Row>
               <Col md={12}>
               <Row>
-                <Col md={{span: 5, offset: 1}}>
+              <Col md={{span: 5, offset: 1}} className="my-4">
                   <Row md={8}>
                     <h6 className="text-center">#Participant</h6>
                   </Row>
@@ -119,7 +156,7 @@ export const ViewBill = (props) => {
                     <h4>{totalParticipant}</h4>
                   </Row>
                 </Col>
-                <Col md={{span: 5, offset: 1}}>
+                <Col md={{span: 5, offset: 1}} className="my-4">
                   <Row md={8}>
                     <h6>Total amount</h6>
                   </Row>
@@ -127,6 +164,9 @@ export const ViewBill = (props) => {
                     <h4>{totalPrice}</h4>
                   </Row>
                 </Col>
+              </Row>
+              <Row>
+                <Col md={2} className="my-2"><Button size="sm"variant="outline-warning"onClick={handleClear}>Clear data</Button>{' '}</Col>
               </Row>
               {/* Tab bar for menu and participant */}
               <Row>
@@ -141,16 +181,16 @@ export const ViewBill = (props) => {
                   </Tabs>
                 </Col>
                 </Row>
-                <Row className="my-3 justify-content-center">
-                  <Col md={{span: 3, offset: 1}} ><Button size="sm"variant="dark" onClick={() => setModalShow(true) }>Add Menu</Button>{' '}</Col>
-                  <Col md={{span: 3, offset: 1}}><Button size="sm"variant="primary"onClick={handleUpdateBill}>Update</Button>{' '}</Col>
-                  <Col md={{span: 3, offset: 1}}><Button size="sm"variant="warning"onClick={handleClear}>Clear data</Button>{' '}</Col>
+                <Row className="my-5 justify-content-center">
+                  <Col md={{span: 2, offset: 1}} ><Button size="sm"variant="dark" onClick={() => setModalShow(true) }>Add Menu</Button>{' '}</Col>
+                  <Col md={{span: 2, offset: 1}}><Button size="sm"variant="primary"onClick={handleUpdateBill}>Update</Button>{' '}</Col>
+                  <Col md={{span: 2, offset: 1}}><Button size="sm"variant="danger"onClick={handleDelete}>Delete</Button>{' '}</Col>
                   {/* <Col md={{span: 3, offset: 1}}><Button size="sm"variant="dark" onClick={() => setModalParticipantShow(true) }>Add Participant</Button>{' '}</Col> */}
               </Row>
     
 
               </Col>
-              <AddMenuModal show={modalShow} onHide={() => setModalShow(false)} setListMenu={setListMenu} users={users} setParticipants={setParticipants} setTotalPrice={setTotalPrice}/>
+              <AddMenuModal show={modalShow} onHide={() => setModalShow(false)} setListMenu={setListMenu} users={users} setParticipants={setParticipants} setTotalPrice={setTotalPrice} backPage={`/bill/${billId}`}/>
           </Row>
 
         </Container>
@@ -212,9 +252,6 @@ export async function getServerSideProps(context) {
       perPerson: Math.round(itemList.price/itemList.payers.length),
       price:itemList.price
     })
-    // console.log(payerTemp);
-    // console.log(listMenuTemp);
-    console.log(participantTemp);
     
   });
   return {

@@ -11,6 +11,7 @@ export const AddMenuModal = (props) => {
   const [menuName, setMenuName] = useState('');
   const [price, setPrice] = useState(null);
   const [payers, setPayer] = useState([]);
+  const backPage = props.backPage;
   const [required, setRequired] = useState({
     name:'',
     price:'',
@@ -151,7 +152,7 @@ export const AddMenuModal = (props) => {
                     onChange={(e) => setPayer(e)}
                   />
                 </Form.Group>
-                <Col md={{span:3, offset:5}}><Button size="sm"variant="dark" onClick={handleAdd}><Link href="/bill">
+                <Col md={{span:3, offset:5}}><Button size="sm"variant="dark" onClick={handleAdd}><Link href={props.backPage}>
                 Add</Link></Button>{' '}</Col>
               </Form>
             </Col>

@@ -94,12 +94,19 @@ export class NotificationService {
   }
 
   async sendNotification(body) {
+    if(!body.registrationTokens.length) return
+    let tokenSet = new Set()
+    for(let i = 0; i<body.registrationTokens.length; ++i){
+      tokenSet.add(body.registrationTokens[i])
+    }
+    let token = []
+    for (let item of tokenSet){
+      token.push(item)
+    }
     const message = {
       data: body.data,
-      tokens: body.registrationTokens,
+      tokens: token,
     };
-
-    if(!message.tokens.length) return
 
     admin
       .messaging()

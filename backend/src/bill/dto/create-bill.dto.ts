@@ -9,6 +9,9 @@ export class createBill {
   readonly itemLists: any[];
 
   @IsOptional()
+  readonly promptPay: string;
+
+  @IsOptional()
   readonly participants: string[];
 
   @IsOptional()

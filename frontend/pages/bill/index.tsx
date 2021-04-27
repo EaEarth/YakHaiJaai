@@ -12,6 +12,7 @@ import { auth, firebase } from '../../src/firebase'
 import axios from 'axios'
 import { useRootStore } from '../../stores/stores'
 import { useRouter } from 'next/router'
+import styles from './bill.module.scss'
 
 export const Bill = (props) => {
   const [billHolder, setBillHolder] = useState({
@@ -131,7 +132,7 @@ const handleClear = () => {
           <Row>
           <Col>
               <Form.Group>
-                <Form.Label>Bill Name</Form.Label>
+                <Form.Label className={`${styles['form-label']}`}>Bill Name</Form.Label>
                 <FormControl
                   plaintext
                   type="text"
@@ -148,7 +149,7 @@ const handleClear = () => {
             </Col>
             <Col>
               <Form.Group>
-                <Form.Label>Prompt Pay ID</Form.Label>
+                <Form.Label className={`${styles['form-label']}`}>Prompt Pay ID</Form.Label>
                 <FormControl
                   plaintext
                   type="text"
@@ -168,7 +169,7 @@ const handleClear = () => {
           <Row>
               <Col md={12}>
               <Row>
-                <Col md={{span: 5, offset: 1}}>
+                <Col md={{span: 5, offset: 1}} className="my-4">
                   <Row md={8}>
                     <h6 className="text-center">#Participant</h6>
                   </Row>
@@ -176,7 +177,7 @@ const handleClear = () => {
                     <h4>{totalParticipant}</h4>
                   </Row>
                 </Col>
-                <Col md={{span: 5, offset: 1}}>
+                <Col md={{span: 3, offset: 1}} className="my-4">
                   <Row md={8}>
                     <h6>Total amount</h6>
                   </Row>
@@ -187,6 +188,9 @@ const handleClear = () => {
               </Row>
               {/* Tab bar for menu and participant */}
               <Row>
+              <Col md={2} className="my-2"><Button size="sm"variant="outline-warning"onClick={handleClear}>Clear data</Button>{' '}</Col>
+              </Row>
+              <Row >
                 <Col>
                   <Tabs fill defaultActiveKey="menu" id="uncontrolled-tab-example">
                     <Tab eventKey="menu" title="Menu" >
@@ -199,14 +203,14 @@ const handleClear = () => {
                 </Col>
               </Row>
       
-              <Row className="my-3 justify-content-center">
+              <Row className="my-5 justify-content-center">
                 <Col md={{span: 3, offset: 1}} ><Button size="sm"variant="dark" onClick={() => setModalShow(true) }>Add Menu</Button>{' '}</Col>
                 <Col md={{span: 3, offset: 1}}><Button size="sm"variant="primary"onClick={handleCreatedBill}>Created Bill</Button>{' '}</Col>
-                <Col md={{span: 3, offset: 1}}><Button size="sm"variant="warning"onClick={handleClear}>Clear data</Button>{' '}</Col>
+                {/* <Col md={{span: 3, offset: 1}}><Button size="sm"variant="warning"onClick={handleClear}>Clear data</Button>{' '}</Col> */}
                 {/* <Col md={{span: 3, offset: 1}}><Button size="sm"variant="dark" onClick={() => setModalParticipantShow(true) }>Add Participant</Button>{' '}</Col> */}
               </Row>
               </Col>
-              <AddMenuModal show={modalShow} onHide={() => setModalShow(false)} setListMenu={setListMenu} users={users} setParticipants={setParticipants} setTotalPrice={setTotalPrice}/>
+              <AddMenuModal show={modalShow} onHide={() => setModalShow(false)} setListMenu={setListMenu} users={users} setParticipants={setParticipants} setTotalPrice={setTotalPrice} backPage={'/bill'}/>
 
               {/* <ParticipantModal show={modalParticipantShow} onHide={() => setModalParticipantShow(false)} setParticipant={setParticipants}/> */}
           </Row>

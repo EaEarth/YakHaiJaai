@@ -9,7 +9,10 @@ export class updateBill {
   readonly itemLists: any[];
 
   @IsOptional()
-  readonly participants: string[];
+  readonly promptPay: string;
+
+  @IsOptional()
+  readonly participants: any;
 
   @IsOptional()
   @IsNumber()

@@ -82,8 +82,8 @@ export class BillController {
     @Param('id', new ParseIntPipe()) id: number,
     @Body() dto: updateBill,
   ): Promise<Bill> {
-    await this.userService.getUserFromToken(req.headers.authtoken);
-    return this.billService.updateBill(id, dto);
+    const user = await this.userService.getUserInfoByToken(req.headers.authtoken);
+    return this.billService.updateBill(id,user, dto);
   }
 
   @Patch('item/:id')
