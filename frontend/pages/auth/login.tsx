@@ -129,7 +129,7 @@ export const Login = observer((prop) => {
               </FormGroup>
               <FormGroup>
                 <FormControl
-                  type="text"
+                  type="password"
                   id="password"
                   value={state.password}
                   placeholder="Password"
