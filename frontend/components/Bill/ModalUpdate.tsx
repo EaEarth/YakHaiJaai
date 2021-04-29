@@ -8,30 +8,42 @@ import styles from './modal.module.scss';
 
 
 export const UpdateMenuModal = (props) => {
-  const [menuName, setMenuName] = useState('');
-  const [price, setPrice] = useState(null);
-  const [payers, setPayer] = useState([]);
+  const [menuName, setMenuName] = useState(props.current?.menu.name || null);
+  const [price, setPrice] = useState(props.current?.menu.price || null);
+  const [payers, setPayers] = useState(props.current?.menu.payers || null);
   const backPage = props.backPage;
+  // const index = props.current?.index || null;
   const [required, setRequired] = useState({
     name:'',
     price:'',
     payers:''
   })
   const name = props.users
+  useEffect(()=>{
+    
+    if(props.current){
+      setMenuName(props.current.menu.name)
+      setPrice(props.current.menu.price)
+      setPayers(props.current.menu.payers)
+    }
+  },[props.current])
+
   const handleAdd =(e)=>{
     e.preventDefault();
+    let index =props.current.index;
     let allInfo = true;
     let menu = {
       name:menuName,
-      price:Number(price),
       payers:payers,
-      perPerson: payers.length ? Math.round(price/payers.length) : 0
+      perPerson: payers.length ? Math.round(price/payers.length) : 0,
+      price:Number(price)
     }
     if(!menuName.length){
       setRequired((prevRequired) => ({
         ...prevRequired,
         name: '*required',
       }))
+      console.log("false");
       allInfo = false
     } else{
       setRequired((prevRequired) => ({
@@ -39,7 +51,7 @@ export const UpdateMenuModal = (props) => {
         name: '',
       }))
     }
-    if(!price.length){
+    if(!price){
 
       setRequired((prevRequired) => ({
         ...prevRequired,
@@ -48,13 +60,13 @@ export const UpdateMenuModal = (props) => {
       allInfo = false
     } 
     if(allInfo){
-
       props.setListMenu((prevMenu) => {
         const nextMenu = prevMenu.slice();
-        nextMenu.push(menu);
+        nextMenu[index] = menu;
       return nextMenu;
     });
       props.setTotalPrice((prevPrice) => {
+        console.log("hello")
         const newPrice = new Number(price)
         return prevPrice+newPrice
       })
@@ -77,12 +89,10 @@ export const UpdateMenuModal = (props) => {
       });
       setMenuName('')
       setPrice('')
-      setPayer([])
+      setPayers([])
       props.onHide()
     }
   }
-  
-
   const hide = (e) =>{
     setRequired({
       name:'',
@@ -91,6 +101,9 @@ export const UpdateMenuModal = (props) => {
     })
     props.onHide()
   }
+
+  
+
 
   return (
     <Modal
@@ -103,7 +116,7 @@ export const UpdateMenuModal = (props) => {
         closeButton
         className={`show-grid ${styles['browse-body']}`}>
         <Modal.Title className={`${styles['browse-title']}`}>
-          Add Menu
+          Update Menu
         </Modal.Title>
       </Modal.Header>
       <Modal.Body className={`show-grid ${styles['browse-body']}`}>
@@ -118,6 +131,7 @@ export const UpdateMenuModal = (props) => {
                   <Form.Control
                     className="form-control"
                     type="text"
+                    value={menuName}
                     onChange={(e) => setMenuName(e.target.value)}
                     isInvalid={!!required.name}
                   />
@@ -130,6 +144,7 @@ export const UpdateMenuModal = (props) => {
                   <Form.Label className={styles.label}>Price :</Form.Label>
                   <Form.Control
                     type="number"
+                    value={price}
                     onChange={(e) => {
                       setPrice(e.target.value);
                     }}
@@ -149,7 +164,7 @@ export const UpdateMenuModal = (props) => {
                     options={name}
                     className="basic-multi-select "
                     classNamePrefix="select"
-                    onChange={(e) => setPayer(e)}
+                    onChange={(e) => setPayers(e)}
                   />
                 </Form.Group>
                 <Col md={{span:3, offset:5}}><Button size="sm"variant="dark" onClick={handleAdd}><Link href={props.backPage}>

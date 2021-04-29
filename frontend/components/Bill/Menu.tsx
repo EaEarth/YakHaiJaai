@@ -13,7 +13,7 @@ export const Menu =(props) => {
     return(
         <>
             <MenuBar/>
-            <MenuInfo list={props.list}/>
+            <MenuInfo list={props.list} setUpdateModal={props.setUpdateModal} setCurrent={props.setCurrent}/>
         </>
     );
 }

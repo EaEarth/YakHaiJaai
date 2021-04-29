@@ -12,13 +12,14 @@ import axios from 'axios'
 import { useRootStore } from '../../stores/stores'
 import { useRouter } from 'next/router'
 import styles from './bill.module.scss'
+import { UpdateMenuModal } from '../../components/Bill/ModalUpdate';
 
 export const ViewBill = (props) => {
   const [billHolder, setBillHolder] = useState({
     title: props.title,
     promptpayId: props.promptPayId
   })
-  const [required, setRequired] = useState({
+  const [required, setRequired] = useState({ 
     title: '',
     promptpayId: ''
   })
@@ -26,13 +27,16 @@ export const ViewBill = (props) => {
   const totalParticipant = participants ? Object.keys(participants).length : 0 ;
   const [listMenu, setListMenu]= useState(props.menu);
   const [modalShow, setModalShow] = useState(false);
+  const [modalUpdateShow, setUpdateModalShow] = useState(false);
   const [totalPrice, setTotalPrice] = useState(props.totalPrice);
+  const [current, setCurrent] = useState(null)
   const notificationStore = useRootStore().notificationStore
   var users = props.users
   const billId = props.id
   const router = useRouter()
 
   const handleUpdateBill = (e) =>{
+    console.log(listMenu)
     e.preventDefault();
      let allInfo = true;
     if (!billHolder.title.length) {
@@ -173,7 +177,7 @@ export const ViewBill = (props) => {
                 <Col>
                   <Tabs fill defaultActiveKey="menu" id="uncontrolled-tab-example">
                     <Tab eventKey="menu" title="Menu" >
-                      <Menu list={listMenu}/>
+                      <Menu list={listMenu} setCurrent={setCurrent} setUpdateModal={setUpdateModalShow}/>
                     </Tab>
                     <Tab eventKey="participant" title="participant" >
                       <Participant participants={participants}/>
@@ -190,7 +194,8 @@ export const ViewBill = (props) => {
     
 
               </Col>
-              <AddMenuModal show={modalShow} onHide={() => setModalShow(false)} setListMenu={setListMenu} users={users} setParticipants={setParticipants} setTotalPrice={setTotalPrice} backPage={`/bill/${billId}`}/>
+              <AddMenuModal show={modalShow} onHide={() => setModalShow(false)} setModalShow={setModalShow} setListMenu={setListMenu} users={users} setParticipants={setParticipants} setTotalPrice={setTotalPrice} backPage={`/bill/${billId}`}/>
+              <UpdateMenuModal show={modalUpdateShow} listMenu={listMenu} setUpdateModalShow={setUpdateModalShow} onHide={() => setUpdateModalShow(false)} setListMenu={setListMenu} current={current} users={users} setParticipants={setParticipants} setTotalPrice={setTotalPrice} backPage={`/bill/${billId}`}/>
           </Row>
 
         </Container>
@@ -242,7 +247,7 @@ export async function getServerSideProps(context) {
           username: payer.username,
           uid: payer.uid,
           value: payer.username,
-          lable:payer.username,
+          label:payer.username,
           fcmTokens: payer.fcmTokens
         })
     });
