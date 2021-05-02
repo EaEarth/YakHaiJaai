@@ -23,9 +23,9 @@ export class updateNoti {
 
   @IsOptional()
   @IsBoolean()
-  readonly isReaded: Boolean;
+  readonly isReaded: boolean;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsNumber()
   readonly billId: number;
 

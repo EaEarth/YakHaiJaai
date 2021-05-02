@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BillNotification } from 'entities/notifications/notification.entity';
 import { User } from 'entities/users/user.entity';
@@ -32,9 +32,9 @@ export class NotificationService {
   getUnreadedNotificationFromUid(uid: string): Promise<BillNotification[]> {
     return this.notificationRepo
       .createQueryBuilder('notification')
-      .where('notification.isReaded = :isReaded', { isReaded: false })
+      .where('notification.isReaded = :readed', { readed: false })
       .leftJoin('notification.user', 'user')
-      .where('user.uid = :uid', { uid: uid })
+      .andWhere('user.uid = :uid', { uid: uid })
       .leftJoinAndSelect('notification.bill', 'bill')
       .getMany();
   }
@@ -94,19 +94,21 @@ export class NotificationService {
   }
 
   async sendNotification(body) {
-    if(!body.registrationTokens.length) return
-    let tokenSet = new Set()
-    for(let i = 0; i<body.registrationTokens.length; ++i){
-      tokenSet.add(body.registrationTokens[i])
+    if (!body.registrationTokens.length) return;
+    let tokenSet = new Set();
+    for (let i = 0; i < body.registrationTokens.length; ++i) {
+      tokenSet.add(body.registrationTokens[i]);
     }
-    let token = []
-    for (let item of tokenSet){
-      token.push(item)
+    let token = [];
+    for (let item of tokenSet) {
+      token.push(item);
     }
     const message = {
       data: body.data,
       tokens: token,
     };
+    if (message.data.bill)
+      message.data.bill = JSON.stringify(message.data.bill);
 
     admin
       .messaging()
@@ -150,5 +152,14 @@ export class NotificationService {
       .leftJoin('notification.bill', 'bill')
       .where('bill.id = :id', { id: id })
       .getMany();
+  }
+
+  async deleteById(id: number) {
+    const noti = await this.notificationRepo.findOne(id, {
+      relations: ['user'],
+    });
+    noti.user = null;
+    await this.notificationRepo.save(noti);
+    this.notificationRepo.delete(id);
   }
 }

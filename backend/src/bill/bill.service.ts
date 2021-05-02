@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Bill } from 'entities/bills/bill.entity';
 import { Item } from 'entities/items/item.entity';
@@ -20,35 +20,37 @@ export class BillService {
     private readonly fileService: FileItemService,
   ) {}
 
-  async index() : Promise<Bill[]>{
-    const bill = await this.billRepo.find({relations:['participants','items']})
-    console.log(bill)
-    return bill
+  async index(): Promise<Bill[]> {
+    const bill = await this.billRepo.find({
+      relations: ['participants', 'items'],
+    });
+    console.log(bill);
+    return bill;
   }
 
-  async indexItem(){
-    return this.itemRepo.find({relations:["bill"]})
+  async indexItem() {
+    return this.itemRepo.find({ relations: ['bill'] });
   }
 
-  async createBill(user:User, dto: createBill): Promise<Bill> {
+  async createBill(user: User, dto: createBill): Promise<Bill> {
     const { itemLists, participants, qrCodeFileId, ...billInfo } = dto;
     const bill = { ...new Bill(), ...billInfo };
     bill.participants = [user];
     bill.items = [];
     // bill.owner = owner;
-    var itemEntity
+    var itemEntity;
     if (itemLists) {
-      for(const item of itemLists){
-        itemEntity = await this.createItem(item)
-        bill.items.push(itemEntity)
+      for (const item of itemLists) {
+        itemEntity = await this.createItem(item);
+        bill.items.push(itemEntity);
       }
     }
     if (participants) {
       let userEntity;
-      for(const uid of participants){
-        if(uid !== user.uid){
-        userEntity = await this.userService.findById(uid)
-        bill.participants.push(userEntity);
+      for (const uid of participants) {
+        if (uid !== user.uid) {
+          userEntity = await this.userService.findById(uid);
+          bill.participants.push(userEntity);
         }
       }
     }
@@ -56,28 +58,30 @@ export class BillService {
       const qrCode = await this.fileService.findById(qrCodeFileId);
       bill.qrCode = qrCode;
     }
-    return this.billRepo.save(bill) 
+    return this.billRepo.save(bill);
   }
 
-  async updateBill(id,user:User , dto: updateBill): Promise<Bill> {
+  async updateBill(id, user: User, dto: updateBill): Promise<Bill> {
     const { itemLists, participants, qrCodeFileId, ...billInfo } = dto;
     const bill = await this.getBillById(id);
     if (dto.title) bill.title = dto.title;
-    console.log(participants)
-    if(participants){
-      bill.participants = [user]
-      for(let username in participants){
-        if(participants[username].uid !== user.uid){
-          bill.participants.push(await this.userService.findById(participants[username].uid))
+    console.log(participants);
+    if (participants) {
+      bill.participants = [user];
+      for (let username in participants) {
+        if (participants[username].uid !== user.uid) {
+          bill.participants.push(
+            await this.userService.findById(participants[username].uid),
+          );
         }
       }
     }
-    let itemEntity
+    let itemEntity;
     if (itemLists) {
-      bill.items = []
-      for(const item of itemLists){
-        itemEntity = await this.createItem(item)
-        bill.items.push(itemEntity)
+      bill.items = [];
+      for (const item of itemLists) {
+        itemEntity = await this.createItem(item);
+        bill.items.push(itemEntity);
       }
     }
     return this.billRepo.save(bill);
@@ -88,8 +92,8 @@ export class BillService {
     const item = { ...new Item(), ...itemInfo };
     item.payers = [];
     var userEntity;
-    for(const payer of payers){
-      userEntity = await this.userService.findById(payer.uid)
+    for (const payer of payers) {
+      userEntity = await this.userService.findById(payer.uid);
       item.payers.push(userEntity);
     }
     return this.itemRepo.save(item);
@@ -103,10 +107,10 @@ export class BillService {
     if (dto.payers) {
       item.payers = [];
       var userEntity;
-    for(const payer of payers){
-      userEntity = await this.userService.findById(payer)
-      item.payers.push(userEntity);
-    }
+      for (const payer of payers) {
+        userEntity = await this.userService.findById(payer);
+        item.payers.push(userEntity);
+      }
     }
     return this.itemRepo.save(item);
   }
@@ -139,10 +143,14 @@ export class BillService {
   }
 
   async deleteBillById(id: number) {
-    const bill = await this.billRepo.findOne(id,{relations:["items"]})
-    for(let i = 0; i<bill.items.length; ++i){
-      await this.deleteItemById(bill.items[i].id)
+    const bill = await this.billRepo.findOne(id, {
+      relations: ['items', 'notifications'],
+    });
+    for (let i = 0; i < bill.items.length; ++i) {
+      await this.deleteItemById(bill.items[i].id);
     }
+    bill.notifications = [];
+    await this.billRepo.save(bill);
     return this.billRepo.delete(id);
   }
 

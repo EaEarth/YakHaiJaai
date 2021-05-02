@@ -24,7 +24,7 @@ export class BillNotification {
   payDate: Date;
 
   @Column('boolean')
-  isReaded: Boolean;
+  isReaded: boolean;
 
   @CreateDateColumn()
   createdAt: Date;
