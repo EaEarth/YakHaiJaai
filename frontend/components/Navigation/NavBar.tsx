@@ -28,11 +28,18 @@ export const NavBar = observer((props) => {
   if (process.browser) {
     messaging = firebase.messaging()
     messaging.onMessage((payload) => {
+      var id = null
+      if (payload.data.bill) {
+        const bill = JSON.parse(payload.data.bill)
+        console.log(bill.id)
+        id = bill.id
+      }
       const message = {
         title: payload.data.title,
         description: payload.data.description,
-        id: payload.data.id,
+        bill: { id: id },
       }
+      console.log(message)
       const noti = notificationStore.getNotifications
       noti.unshift(message)
       notificationStore.setNotifications(noti)
@@ -41,8 +48,21 @@ export const NavBar = observer((props) => {
       )
     })
   }
+
+  const handleNotiClick = async (billNoti) => {
+    console.log(billNoti)
+    if (billNoti && billNoti.id) {
+      const bill = await axios.get(
+        `http://localhost:8000/api/bill/get/${billNoti.id}`
+      )
+      if (bill) {
+        router.push(`/bill/${billNoti.id}`)
+      }
+    }
+  }
+
   const notification = notificationStore.notifications.map((noti) => (
-    <NavDropdown.Item key={noti.id} href="#action/3.1">
+    <NavDropdown.Item key={noti.id} onClick={() => handleNotiClick(noti.bill)}>
       <Col className={`p-0`}>
         <Row>
           <Col className={`${styles['nav-title']}`}>{noti.title}</Col>
@@ -102,6 +122,7 @@ export const NavBar = observer((props) => {
   }
 
   const handleToggleNotification = (e) => {
+    console.log({ ...notificationStore.notifications[0] })
     notificationStore.setNotificationCount(0)
     auth.currentUser.getIdToken(true).then((idToken) => {
       const instance = axios.create({

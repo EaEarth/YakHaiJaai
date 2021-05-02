@@ -22,6 +22,11 @@ export class AuthStore {
   }
 
   @computed
+  get getUserInfo() {
+    return this.userInfo
+  }
+
+  @computed
   get isLoggedIn(): boolean {
     return this.userInfo !== null
   }

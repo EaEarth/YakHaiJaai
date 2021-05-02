@@ -23,7 +23,6 @@ export class NotificationStore {
       data: data,
       registrationTokens: tokens,
     }
-    console.log(payload)
     axios.post('http://localhost:8000/api/notification/send', payload)
   }
 
