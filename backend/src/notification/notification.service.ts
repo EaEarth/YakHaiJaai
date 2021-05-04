@@ -43,8 +43,11 @@ export class NotificationService {
     const { usersId, billId, ...info } = dto;
     if (!info['isReaded']) info['isReaded'] = false;
     if (!info['payDate']) info['payDate'] = new Date(Date.now());
-    const bill = await this.billService.getBillById(billId);
     var notification = { ...new BillNotification(), ...info };
+    var bill = null;
+    if (billId) {
+      bill = await this.billService.getBillById(billId);
+    }
     notification.bill = bill;
     notification.user = creator;
     await this.notificationRepo.save(notification);
@@ -78,7 +81,10 @@ export class NotificationService {
     });
     if (users.size === 0) return;
     var notiEntity, userEntity;
-    const bill = await this.billService.getBillById(billId);
+    var bill = null;
+    if (billId) {
+      bill = await this.billService.getBillById(billId);
+    }
     for (let uid of users) {
       notiEntity = new BillNotification();
       notiEntity.title = newNoti.title;

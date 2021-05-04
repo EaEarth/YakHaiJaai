@@ -70,9 +70,11 @@ export const ViewBill = (props) => {
       })
     }
 
+    const description = 'Bill have been updated'
+
     const data = {
       title: billHolder.title,
-      description: 'Bill have been updated',
+      description: description,
       bill: { id: billId },
     }
 
@@ -90,7 +92,7 @@ export const ViewBill = (props) => {
         .then((response) => {
           const notiPayload = {
             title: billHolder.title,
-            description: 'Bill have been updated',
+            description: description,
             billId: billId,
             usersId: participant,
           }
@@ -118,13 +120,17 @@ export const ViewBill = (props) => {
   }
 
   const handleDelete = () => {
+    const description = 'Bill have been deleted'
     const data = {
       title: billHolder.title,
-      description: 'Bill have been deleted',
+      description: description,
     }
+
+    var participant = []
     var participantsToken = []
 
     for (let user in participants) {
+      participant.push(participants[user].uid)
       participants[user].fcmTokens.forEach((token) => {
         if (token.isLogIn) {
           participantsToken.push(token.token)
@@ -137,6 +143,14 @@ export const ViewBill = (props) => {
           headers: { authtoken: token },
         })
         .then((response) => {
+          const notiPayload = {
+            title: billHolder.title,
+            description: description,
+            usersId: participant,
+          }
+          axios.post('http://localhost:8000/api/notification', notiPayload, {
+            headers: { authtoken: token },
+          })
           notificationStore.sendNotification(participantsToken, data)
           router.push('/')
         })

@@ -125,6 +125,37 @@ export const UpdateMenuModal = (props) => {
     props.onHide()
   }
 
+  const handleRemove = (e) => {
+    let index = props.current.index
+    props.setTotalPrice((prevPrice) => {
+      var subtract = 0
+      if (oldMenu) {
+        subtract = oldMenu.menu.price
+      }
+      return prevPrice - subtract
+    })
+    if (oldMenu) {
+      props.setParticipants((prevPar) => {
+        const newParticipant = { ...prevPar }
+        oldMenu.menu.payers.forEach((user) => {
+          newParticipant[user.username].cost -= Math.round(
+            oldMenu.menu.price / oldMenu.menu.payers.length
+          )
+        })
+        return newParticipant
+      })
+    }
+    props.setListMenu((prevMenu) => {
+      const nextMenu = prevMenu.slice()
+      nextMenu.splice(index, 1)
+      return nextMenu
+    })
+    setMenuName('')
+    setPrice('')
+    setPayers([])
+    props.onHide()
+  }
+
   return (
     <Modal
       show={props.show}
@@ -188,11 +219,18 @@ export const UpdateMenuModal = (props) => {
                     onChange={(e) => setPayers(e)}
                   />
                 </Form.Group>
-                <Col md={{ span: 3, offset: 5 }}>
-                  <Button size="sm" variant="dark" onClick={handleAdd}>
-                    Save
-                  </Button>{' '}
-                </Col>
+                <Row>
+                  <Col md={{ span: 3, offset: 3 }}>
+                    <Button size="sm" variant="dark" onClick={handleAdd}>
+                      Save
+                    </Button>{' '}
+                  </Col>
+                  <Col md={{ span: 3 }}>
+                    <Button size="sm" variant="danger" onClick={handleRemove}>
+                      Remove
+                    </Button>{' '}
+                  </Col>
+                </Row>
               </Form>
             </Col>
           </Row>

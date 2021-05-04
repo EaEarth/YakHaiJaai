@@ -31,21 +31,40 @@ export const NavBar = observer((props) => {
       var id = null
       if (payload.data.bill) {
         const bill = JSON.parse(payload.data.bill)
-        console.log(bill.id)
-        id = bill.id
+        id = { id: bill.id }
       }
       const message = {
         title: payload.data.title,
         description: payload.data.description,
-        bill: { id: id },
+        bill: id,
       }
-      console.log(message)
+      var isDuplicated = false
       const noti = notificationStore.getNotifications
-      noti.unshift(message)
-      notificationStore.setNotifications(noti)
-      notificationStore.setNotificationCount(
-        notificationStore.notificationCount + 1
-      )
+      for (let i = 0; i < noti.length; i++) {
+        if (
+          noti[i].title === message.title &&
+          noti[i].description === message.description
+        ) {
+          if (!noti[i].bill) {
+            if (!message.bill) {
+              isDuplicated = true
+              break
+            }
+          } else {
+            if (message.bill && message.bill.id === noti[i].bill.id) {
+              isDuplicated = true
+              break
+            }
+          }
+        }
+      }
+      if (!isDuplicated) {
+        noti.unshift(message)
+        notificationStore.setNotifications(noti)
+        notificationStore.setNotificationCount(
+          notificationStore.notificationCount + 1
+        )
+      }
     })
   }
 
