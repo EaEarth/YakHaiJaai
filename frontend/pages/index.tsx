@@ -50,7 +50,7 @@ export const Home = observer((props) => {
     if (authStore.user) {
       auth.currentUser.getIdToken(true).then((token) => {
         axios
-          .get(`http://localhost:8000/api/bill/list`, {
+          .get(`https://yakhaijaai-av4aghecuq-as.a.run.app/api/bill/list`, {
             headers: {
               authtoken: token,
             },

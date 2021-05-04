@@ -71,7 +71,7 @@ export const NavBar = observer((props) => {
   const handleNotiClick = async (billNoti) => {
     if (billNoti && billNoti.id) {
       const bill = await axios.get(
-        `http://localhost:8000/api/bill/get/${billNoti.id}`
+        `https://yakhaijaai-av4aghecuq-as.a.run.app/api/bill/get/${billNoti.id}`
       )
       if (bill) {
         router.push(`/bill/${billNoti.id}`)
@@ -115,10 +115,13 @@ export const NavBar = observer((props) => {
             })
             .then((currentToken) => {
               if (currentToken) {
-                axios.patch('http://localhost:8000/api/user/token', {
-                  token: currentToken,
-                  isLogin: false,
-                })
+                axios.patch(
+                  'https://yakhaijaai-av4aghecuq-as.a.run.app/api/user/token',
+                  {
+                    token: currentToken,
+                    isLogin: false,
+                  }
+                )
               } else {
                 console.log(
                   'No registration token available. Request permission to generate one.'
@@ -144,7 +147,7 @@ export const NavBar = observer((props) => {
     notificationStore.setNotificationCount(0)
     auth.currentUser.getIdToken(true).then((idToken) => {
       const instance = axios.create({
-        baseURL: 'http://localhost:8000/api',
+        baseURL: 'https://yakhaijaai-av4aghecuq-as.a.run.app/api',
         headers: { authtoken: idToken },
       })
       instance.patch('/notification/readAll').catch((error) => {
@@ -165,20 +168,26 @@ export const NavBar = observer((props) => {
     if (authStore.user) {
       auth.currentUser.getIdToken(true).then((idToken) => {
         axios
-          .get(`http://localhost:8000/api/user/current-user/info`, {
-            headers: {
-              authtoken: idToken,
-            },
-          })
+          .get(
+            `https://yakhaijaai-av4aghecuq-as.a.run.app/api/user/current-user/info`,
+            {
+              headers: {
+                authtoken: idToken,
+              },
+            }
+          )
           .then(function (response) {
             authStore.setUserInfo(response.data)
           })
         axios
-          .get(`http://localhost:8000/api/notification/current-user/unreaded`, {
-            headers: {
-              authtoken: idToken,
-            },
-          })
+          .get(
+            `https://yakhaijaai-av4aghecuq-as.a.run.app/api/notification/current-user/unreaded`,
+            {
+              headers: {
+                authtoken: idToken,
+              },
+            }
+          )
           .then(function (response) {
             notificationStore.setNotifications(response.data)
             notificationStore.setNotificationCount(response.data.length)

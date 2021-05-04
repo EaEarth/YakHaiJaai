@@ -131,9 +131,13 @@ export const Bill = observer((props: any) => {
 
     auth.currentUser.getIdToken(true).then((token) => {
       axios
-        .post('http://localhost:8000/api/bill/bill', payload, {
-          headers: { authtoken: token },
-        })
+        .post(
+          'https://yakhaijaai-av4aghecuq-as.a.run.app/api/bill/bill',
+          payload,
+          {
+            headers: { authtoken: token },
+          }
+        )
         .then((response) => {
           const notiPayload = {
             title: billHolder.title,
@@ -141,9 +145,13 @@ export const Bill = observer((props: any) => {
             billId: response.data.id,
             usersId: participant,
           }
-          axios.post('http://localhost:8000/api/notification', notiPayload, {
-            headers: { authtoken: token },
-          })
+          axios.post(
+            'https://yakhaijaai-av4aghecuq-as.a.run.app/api/notification',
+            notiPayload,
+            {
+              headers: { authtoken: token },
+            }
+          )
           const data = {
             title: billHolder.title,
             description: 'New bill Created',
@@ -312,7 +320,9 @@ export const Bill = observer((props: any) => {
   )
 })
 export async function getServerSideProps(context) {
-  const users = await axios.get(`http://localhost:8000/api/user`)
+  const users = await axios.get(
+    `https://yakhaijaai-av4aghecuq-as.a.run.app/api/user`
+  )
   const userList = []
   var obj = {}
   users.data.forEach((user) => {

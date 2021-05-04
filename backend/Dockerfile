@@ -21,7 +21,7 @@ RUN yarn install --production --prefer-offline
 #RUN yarn cache clean
 
 FROM node:alpine AS runner
-ENV NODE_ENV=production 
+ENV NODE_ENV=production
 WORKDIR /app
 
 COPY --from=builder ./app/ ./

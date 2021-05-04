@@ -60,11 +60,15 @@ export const Login = observer((prop) => {
                     if (currentToken) {
                       const payload = { fcmToken: currentToken }
                       axios
-                        .patch('http://localhost:8000/api/user', payload, {
-                          headers: {
-                            authtoken: idToken,
-                          },
-                        })
+                        .patch(
+                          'https://yakhaijaai-av4aghecuq-as.a.run.app/api/user',
+                          payload,
+                          {
+                            headers: {
+                              authtoken: idToken,
+                            },
+                          }
+                        )
                         .then((response) => {
                           if (response.status === 200) {
                             router.push('/')
