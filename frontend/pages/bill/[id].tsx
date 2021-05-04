@@ -47,7 +47,6 @@ export const ViewBill = (props) => {
   const router = useRouter()
 
   const handleUpdateBill = (e) => {
-    console.log(listMenu)
     e.preventDefault()
     let allInfo = true
     if (!billHolder.title.length) {
@@ -86,9 +85,13 @@ export const ViewBill = (props) => {
     }
     auth.currentUser.getIdToken(true).then((token) => {
       axios
-        .patch(`http://localhost:8000/api/bill/bill/${billId}`, payload, {
-          headers: { authtoken: token },
-        })
+        .patch(
+          `https://yakhaijaai-av4aghecuq-as.a.run.app/api/bill/bill/${billId}`,
+          payload,
+          {
+            headers: { authtoken: token },
+          }
+        )
         .then((response) => {
           const notiPayload = {
             title: billHolder.title,
@@ -96,9 +99,13 @@ export const ViewBill = (props) => {
             billId: billId,
             usersId: participant,
           }
-          axios.post('http://localhost:8000/api/notification', notiPayload, {
-            headers: { authtoken: token },
-          })
+          axios.post(
+            'https://yakhaijaai-av4aghecuq-as.a.run.app/api/notification',
+            notiPayload,
+            {
+              headers: { authtoken: token },
+            }
+          )
           notificationStore.sendNotification(participantsToken, data)
           router.push('/')
         })
@@ -139,18 +146,25 @@ export const ViewBill = (props) => {
     }
     auth.currentUser.getIdToken(true).then((token) => {
       axios
-        .delete(`http://localhost:8000/api/bill/bill/${billId}`, {
-          headers: { authtoken: token },
-        })
+        .delete(
+          `https://yakhaijaai-av4aghecuq-as.a.run.app/api/bill/bill/${billId}`,
+          {
+            headers: { authtoken: token },
+          }
+        )
         .then((response) => {
           const notiPayload = {
             title: billHolder.title,
             description: description,
             usersId: participant,
           }
-          axios.post('http://localhost:8000/api/notification', notiPayload, {
-            headers: { authtoken: token },
-          })
+          axios.post(
+            'https://yakhaijaai-av4aghecuq-as.a.run.app/api/notification',
+            notiPayload,
+            {
+              headers: { authtoken: token },
+            }
+          )
           notificationStore.sendNotification(participantsToken, data)
           router.push('/')
         })
@@ -309,9 +323,11 @@ export const ViewBill = (props) => {
 }
 export async function getServerSideProps(context) {
   const detail = await axios.get(
-    `http://localhost:8000/api/bill/get/${context.params.id}`
+    `https://yakhaijaai-av4aghecuq-as.a.run.app/api/bill/get/${context.params.id}`
   )
-  const users = await axios.get(`http://localhost:8000/api/user`)
+  const users = await axios.get(
+    `https://yakhaijaai-av4aghecuq-as.a.run.app/api/user`
+  )
   const userList = []
   var obj = {}
   users.data.forEach((user) => {

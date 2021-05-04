@@ -35,7 +35,7 @@ export const Edit = (props) => {
       if (firstTime) {
         const token = await user.getIdToken(true)
         const response = await axios.get(
-          `http://localhost:8000/api/user/current-user/info`,
+          `https://yakhaijaai-av4aghecuq-as.a.run.app/api/user/current-user/info`,
           {
             headers: {
               authtoken: token,
@@ -143,7 +143,7 @@ export const Edit = (props) => {
   const updateProfile = (payload) => {
     auth.currentUser.getIdToken(true).then(async (token) => {
       const instance = axios.create({
-        baseURL: 'http://localhost:8000/api',
+        baseURL: 'https://yakhaijaai-av4aghecuq-as.a.run.app/api',
         headers: { authtoken: token },
       })
       instance

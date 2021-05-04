@@ -24,7 +24,6 @@ export class BillService {
     const bill = await this.billRepo.find({
       relations: ['participants', 'items'],
     });
-    console.log(bill);
     return bill;
   }
 
@@ -65,7 +64,6 @@ export class BillService {
     const { itemLists, participants, qrCodeFileId, ...billInfo } = dto;
     const bill = await this.getBillById(id);
     if (dto.title) bill.title = dto.title;
-    console.log(participants);
     if (participants) {
       bill.participants = [user];
       for (let username in participants) {

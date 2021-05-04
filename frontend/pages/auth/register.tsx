@@ -177,7 +177,8 @@ export const Register = (props) => {
       }))
 
     const checkUsername = await axios.get(
-      'http://localhost:8000/api/user/search/' + profile.username
+      'https://yakhaijaai-av4aghecuq-as.a.run.app/api/user/search/' +
+        profile.username
     )
     if (checkUsername.data) {
       setRequired((prevRequired) => ({
@@ -251,7 +252,7 @@ export const Register = (props) => {
 
   const register = (payload, token) => {
     axios
-      .post('http://localhost:8000/api/user', payload, {
+      .post('https://yakhaijaai-av4aghecuq-as.a.run.app/api/user', payload, {
         headers: {
           authtoken: token,
         },

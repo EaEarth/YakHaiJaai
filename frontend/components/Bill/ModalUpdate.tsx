@@ -33,7 +33,6 @@ export const UpdateMenuModal = (props) => {
       setPrice(props.current.menu.price)
       setPayers(props.current.menu.payers)
       setOldMenu(props.current)
-      console.log(oldMenu)
     }
   }, [props.current])
 
@@ -52,7 +51,6 @@ export const UpdateMenuModal = (props) => {
         ...prevRequired,
         name: '*required',
       }))
-      console.log('false')
       allInfo = false
     } else {
       setRequired((prevRequired) => ({
