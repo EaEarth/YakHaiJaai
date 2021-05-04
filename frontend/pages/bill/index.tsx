@@ -81,12 +81,10 @@ export const Bill = observer((props: any) => {
             fcmTokens: authStore.userInfo.fcmTokens,
             uid: authStore.userInfo.uid,
           }
-          console.log(newParticipant[authStore.userInfo.username])
         }
         return newParticipant
       })
     }
-    console.log(participants)
   }, [authStore.userInfo])
 
   const handleCreatedBill = (e) => {

@@ -22,7 +22,7 @@ export class UserService {
   ) {}
 
   index() {
-    return this.repo.find({relations: ["fcmTokens","bills"]});
+    return this.repo.find({ relations: ['fcmTokens', 'bills'] });
   }
 
   async getUserFromToken(token): Promise<any> {
@@ -30,7 +30,6 @@ export class UserService {
       .auth()
       .verifyIdToken(token)
       .catch((error) => {
-        console.log(error);
         throw new UnauthorizedException('Token is not valid');
       });
     return user;
@@ -46,9 +45,9 @@ export class UserService {
     const userInfo = { ...new User(), ...info };
     userInfo.uid = user.uid;
     userInfo.fcmTokens = [];
-    userInfo.bills = []
-    userInfo.owns = []
-    userInfo.items = []
+    userInfo.bills = [];
+    userInfo.owns = [];
+    userInfo.items = [];
     if (avatarId) {
       const file = await this.fileService.findById(avatarId);
       if (file) {
@@ -78,7 +77,6 @@ export class UserService {
     if (fcmToken) {
       if (uid) {
         user = await this.repo.findOne(uid);
-        console.log(user)
         if (user) {
           var userExists = false;
           for (var i = 0; i < fcmToken.users.length; ++i) {
@@ -98,12 +96,11 @@ export class UserService {
     tokenEntity.users = [];
     tokenEntity.isLogIn = true;
     if (uid) {
-      
       user = await this.repo.findOne(uid);
       if (user) {
         tokenEntity.users.push(user);
       } else {
-        console.log('not found')
+        console.log('not found');
         throw new NotFoundException('user not found');
       }
     }
@@ -167,7 +164,7 @@ export class UserService {
   }
 
   findById(id: string): Promise<User> {
-    return this.repo.findOne({where:{uid:id}});
+    return this.repo.findOne({ where: { uid: id } });
   }
 
   async logInOrOutToken(tokenInfo): Promise<FcmToken> {

@@ -69,7 +69,6 @@ export const NavBar = observer((props) => {
   }
 
   const handleNotiClick = async (billNoti) => {
-    console.log(billNoti)
     if (billNoti && billNoti.id) {
       const bill = await axios.get(
         `http://localhost:8000/api/bill/get/${billNoti.id}`

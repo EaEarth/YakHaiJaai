@@ -13,7 +13,11 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors();
   admin.initializeApp({
-    credential: admin.credential.cert(process.env.FIREBASE_KEY_PATH),
+    credential: admin.credential.cert({
+      projectId: process.env.PROJECT_ID.replace(/\\n/g, '\n'),
+      privateKey: process.env.PRIVATE_KEY.replace(/\\n/g, '\n'),
+      clientEmail: process.env.CLIENT_EMAIL.replace(/\\n/g, '\n'),
+    }),
   });
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   app.setGlobalPrefix('api');

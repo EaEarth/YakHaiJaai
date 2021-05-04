@@ -26,7 +26,6 @@ export const Home = observer((props) => {
   }
 
   // auth.onAuthStateChanged(async (user) => {
-  //   console.log(user)
   //   if (user) {
   //     if (firstTime) {
   //       const token = await user.getIdToken(true)
@@ -48,7 +47,7 @@ export const Home = observer((props) => {
   // })
 
   useEffect(() => {
-    if (authStore.user ) {
+    if (authStore.user) {
       auth.currentUser.getIdToken(true).then((token) => {
         axios
           .get(`http://localhost:8000/api/bill/list`, {
@@ -63,7 +62,7 @@ export const Home = observer((props) => {
     } else {
       setbills([])
     }
-  },[authStore.user])
+  }, [authStore.user])
 
   return (
     <DefaultLayout>

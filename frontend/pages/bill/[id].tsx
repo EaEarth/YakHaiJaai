@@ -47,7 +47,6 @@ export const ViewBill = (props) => {
   const router = useRouter()
 
   const handleUpdateBill = (e) => {
-    console.log(listMenu)
     e.preventDefault()
     let allInfo = true
     if (!billHolder.title.length) {

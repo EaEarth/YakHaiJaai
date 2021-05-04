@@ -120,7 +120,6 @@ export class NotificationService {
       .messaging()
       .sendMulticast(message)
       .then((response) => {
-        // console.log(response.responses)
         if (response.failureCount > 0) {
           const failedTokens = [];
           response.responses.forEach((resp, idx) => {
