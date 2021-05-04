@@ -4,12 +4,14 @@ import { AppModule } from './app.module';
 import admin from 'firebase-admin';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, {
-    cors: {
-      origin: ['http://localhost:3000'],
-      credentials: true,
-    },
-  });
+  // const app = await NestFactory.create(AppModule, {
+  //   cors: {
+  //     origin: ['http://localhost:3000'],
+  //     credentials: true,
+  //   },
+  // });
+  const app = await NestFactory.create(AppModule);
+  app.enableCors();
   admin.initializeApp({
     credential: admin.credential.cert(process.env.FIREBASE_KEY_PATH),
   });
