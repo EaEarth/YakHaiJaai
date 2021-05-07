@@ -1,0 +1,53 @@
+version: "3.9" # optional since v1.27.0
+services:
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        - API_ENDPOINT=http://localhost:8080
+        - API_KEY
+        - AUTH_DOMAIN
+        - PROJECT_ID
+        - STORAGE_BUCKET
+        - MESSAGING_SENDER_ID
+        - APP_ID
+        - VAPID_KEY
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+  backend:
+    build:
+      context: ./backend
+      args:
+        - ARG_DB_CONNECTION=mysql
+        - ARG_DB_HOST=localhost
+        - ARG_DB_PORT=3306
+        - ARG_DB_DATABASE=yakhaijaai
+        - ARG_DB_USERNAME=yakhaijaai
+        - ARG_DB_PASSWORD=yakhaijaai
+        - ARG_PROJECT_ID
+        - ARG_PRIVATE_KEY
+        - ARG_CLIENT_EMAIL
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+    environment:
+      - DB_HOST=mysql
+      - URL=http://localhost:8080
+    volumes:
+      - upload:/app/uploads
+  mysql:
+    image: mysql:8
+    volumes:
+      - mysql:/var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=yakhaijaai
+      - MYSQL_USER=yakhaijaai
+      - MYSQL_PASSWORD=yakhaijaai
+      - MYSQL_ROOT_PASSWORD=yakhaijaai
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --default-authentication-plugin=mysql_native_password
+volumes:
+  mysql: {}
+  upload: {}

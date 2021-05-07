@@ -25,32 +25,11 @@ export const Home = observer((props) => {
     })
   }
 
-  // auth.onAuthStateChanged(async (user) => {
-  //   if (user) {
-  //     if (firstTime) {
-  //       const token = await user.getIdToken(true)
-  //       const response = await axios.get(
-  //         `http://localhost:8000/api/bill/list`,
-  //         {
-  //           headers: {
-  //             authtoken: token,
-  //           },
-  //         }
-  //       )
-  //       setbills(response.data)
-  //       setFirstTime(false)
-  //     }
-  //   } else {
-  //     setbills([])
-  //     setFirstTime(true)
-  //   }
-  // })
-
   useEffect(() => {
     if (authStore.user) {
       auth.currentUser.getIdToken(true).then((token) => {
         axios
-          .get(`https://yakhaijaai-av4aghecuq-as.a.run.app/api/bill/list`, {
+          .get(`${process.env.URL || 'http://localhost:8080'}/api/bill/list`, {
             headers: {
               authtoken: token,
             },

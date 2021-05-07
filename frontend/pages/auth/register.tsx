@@ -146,6 +146,12 @@ export const Register = (props) => {
         phoneNumber: '*required',
       }))
       allInfo = false
+    } else if (profile.phoneNumber.length !== 10) {
+      setRequired((prevRequired) => ({
+        ...prevRequired,
+        phoneNumber: 'Phone number must has length 10',
+      }))
+      allInfo = false
     } else setRequired((prevRequired) => ({ ...prevRequired, phoneNumber: '' }))
 
     if (!profile.password.length) {
@@ -177,7 +183,7 @@ export const Register = (props) => {
       }))
 
     const checkUsername = await axios.get(
-      'https://yakhaijaai-av4aghecuq-as.a.run.app/api/user/search/' +
+      `${process.env.URL || 'http://localhost:8080'}/api/user/search/` +
         profile.username
     )
     if (checkUsername.data) {
@@ -252,7 +258,7 @@ export const Register = (props) => {
 
   const register = (payload, token) => {
     axios
-      .post('https://yakhaijaai-av4aghecuq-as.a.run.app/api/user', payload, {
+      .post(`${process.env.URL || 'http://localhost:8080'}/api/user`, payload, {
         headers: {
           authtoken: token,
         },
