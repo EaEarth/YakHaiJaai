@@ -71,7 +71,9 @@ export const NavBar = observer((props) => {
   const handleNotiClick = async (billNoti) => {
     if (billNoti && billNoti.id) {
       const bill = await axios.get(
-        `https://yakhaijaai-av4aghecuq-as.a.run.app/api/bill/get/${billNoti.id}`
+        `${process.env.URL || 'http://localhost:8080'}/api/bill/get/${
+          billNoti.id
+        }`
       )
       if (bill) {
         router.push(`/bill/${billNoti.id}`)
@@ -116,7 +118,9 @@ export const NavBar = observer((props) => {
             .then((currentToken) => {
               if (currentToken) {
                 axios.patch(
-                  'https://yakhaijaai-av4aghecuq-as.a.run.app/api/user/token',
+                  `${
+                    process.env.URL || 'http://localhost:8080'
+                  }/api/user/token`,
                   {
                     token: currentToken,
                     isLogin: false,
@@ -143,11 +147,10 @@ export const NavBar = observer((props) => {
   }
 
   const handleToggleNotification = (e) => {
-    console.log({ ...notificationStore.notifications[0] })
     notificationStore.setNotificationCount(0)
     auth.currentUser.getIdToken(true).then((idToken) => {
       const instance = axios.create({
-        baseURL: 'https://yakhaijaai-av4aghecuq-as.a.run.app/api',
+        baseURL: `${process.env.URL || 'http://localhost:8080'}/api`,
         headers: { authtoken: idToken },
       })
       instance.patch('/notification/readAll').catch((error) => {
@@ -169,7 +172,9 @@ export const NavBar = observer((props) => {
       auth.currentUser.getIdToken(true).then((idToken) => {
         axios
           .get(
-            `https://yakhaijaai-av4aghecuq-as.a.run.app/api/user/current-user/info`,
+            `${
+              process.env.URL || 'http://localhost:8080'
+            }/api/user/current-user/info`,
             {
               headers: {
                 authtoken: idToken,
@@ -181,7 +186,9 @@ export const NavBar = observer((props) => {
           })
         axios
           .get(
-            `https://yakhaijaai-av4aghecuq-as.a.run.app/api/notification/current-user/unreaded`,
+            `${
+              process.env.URL || 'http://localhost:8080'
+            }/api/notification/current-user/unreaded`,
             {
               headers: {
                 authtoken: idToken,

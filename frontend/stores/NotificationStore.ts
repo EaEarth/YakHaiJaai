@@ -24,7 +24,7 @@ export class NotificationStore {
       registrationTokens: tokens,
     }
     axios.post(
-      'https://yakhaijaai-av4aghecuq-as.a.run.app/api/notification/send',
+      `${process.env.URL || 'http://localhost:8080'}/api/notification/send`,
       payload
     )
   }

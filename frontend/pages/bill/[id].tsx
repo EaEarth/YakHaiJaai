@@ -86,7 +86,9 @@ export const ViewBill = (props) => {
     auth.currentUser.getIdToken(true).then((token) => {
       axios
         .patch(
-          `https://yakhaijaai-av4aghecuq-as.a.run.app/api/bill/bill/${billId}`,
+          `${
+            process.env.URL || 'http://localhost:8080'
+          }/api/bill/bill/${billId}`,
           payload,
           {
             headers: { authtoken: token },
@@ -100,7 +102,7 @@ export const ViewBill = (props) => {
             usersId: participant,
           }
           axios.post(
-            'https://yakhaijaai-av4aghecuq-as.a.run.app/api/notification',
+            `${process.env.URL || 'http://localhost:8080'}/api/notification`,
             notiPayload,
             {
               headers: { authtoken: token },
@@ -147,7 +149,9 @@ export const ViewBill = (props) => {
     auth.currentUser.getIdToken(true).then((token) => {
       axios
         .delete(
-          `https://yakhaijaai-av4aghecuq-as.a.run.app/api/bill/bill/${billId}`,
+          `${
+            process.env.URL || 'http://localhost:8080'
+          }/api/bill/bill/${billId}`,
           {
             headers: { authtoken: token },
           }
@@ -159,7 +163,7 @@ export const ViewBill = (props) => {
             usersId: participant,
           }
           axios.post(
-            'https://yakhaijaai-av4aghecuq-as.a.run.app/api/notification',
+            `${process.env.URL || 'http://localhost:8080'}/api/notification`,
             notiPayload,
             {
               headers: { authtoken: token },
@@ -323,10 +327,12 @@ export const ViewBill = (props) => {
 }
 export async function getServerSideProps(context) {
   const detail = await axios.get(
-    `https://yakhaijaai-av4aghecuq-as.a.run.app/api/bill/get/${context.params.id}`
+    `${process.env.URL || 'http://localhost:8080'}/api/bill/get/${
+      context.params.id
+    }`
   )
   const users = await axios.get(
-    `https://yakhaijaai-av4aghecuq-as.a.run.app/api/user`
+    `${process.env.URL || 'http://localhost:8080'}/api/user`
   )
   const userList = []
   var obj = {}

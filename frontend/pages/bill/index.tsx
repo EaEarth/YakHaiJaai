@@ -132,7 +132,7 @@ export const Bill = observer((props: any) => {
     auth.currentUser.getIdToken(true).then((token) => {
       axios
         .post(
-          'https://yakhaijaai-av4aghecuq-as.a.run.app/api/bill/bill',
+          `${process.env.URL || 'http://localhost:8080'}/api/bill/bill`,
           payload,
           {
             headers: { authtoken: token },
@@ -146,7 +146,7 @@ export const Bill = observer((props: any) => {
             usersId: participant,
           }
           axios.post(
-            'https://yakhaijaai-av4aghecuq-as.a.run.app/api/notification',
+            `${process.env.URL || 'http://localhost:8080'}/api/notification`,
             notiPayload,
             {
               headers: { authtoken: token },
@@ -283,7 +283,7 @@ export const Bill = observer((props: any) => {
                     variant="primary"
                     onClick={handleCreatedBill}
                   >
-                    Created Bill
+                    Create Bill
                   </Button>{' '}
                 </Col>
                 {/* <Col md={{span: 3, offset: 1}}><Button size="sm"variant="warning"onClick={handleClear}>Clear data</Button>{' '}</Col> */}
@@ -320,26 +320,30 @@ export const Bill = observer((props: any) => {
   )
 })
 export async function getServerSideProps(context) {
-  const users = await axios.get(
-    `https://yakhaijaai-av4aghecuq-as.a.run.app/api/user`
-  )
-  const userList = []
-  var obj = {}
-  users.data.forEach((user) => {
-    obj = {
-      username: user.username,
-      uid: user.uid,
-      value: user.username,
-      label: user.username,
-      fcmTokens: user.fcmTokens,
-    }
-    userList.push(obj)
-  })
-  return {
-    props: {
-      users: userList,
-    },
-  }
+  const users = await axios
+    .get(`${process.env.URL || 'http://localhost:8080'}/api/user`)
+    .then((response) => {
+      const userList = []
+      var obj = {}
+      response.data.forEach((user) => {
+        obj = {
+          username: user.username,
+          uid: user.uid,
+          value: user.username,
+          label: user.username,
+          fcmTokens: user.fcmTokens,
+        }
+        userList.push(obj)
+      })
+      return {
+        props: {
+          users: userList,
+        },
+      }
+    })
+    .catch((err) => {
+      console.log(err)
+    })
 }
 
 export default Bill
