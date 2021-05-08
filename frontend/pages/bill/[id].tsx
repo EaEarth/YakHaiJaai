@@ -23,6 +23,11 @@ import { useRootStore } from '../../stores/stores'
 import { useRouter } from 'next/router'
 import styles from './bill.module.scss'
 import { UpdateMenuModal } from '../../components/Bill/ModalUpdate'
+import getConfig from '../../next.config';
+
+const { serverRuntimeConfig, publicRuntimeConfig } = getConfig;
+
+const apiUrl = serverRuntimeConfig.apiUrl || publicRuntimeConfig.apiUrl;
 
 export const ViewBill = (props) => {
   const [billHolder, setBillHolder] = useState({
@@ -87,7 +92,7 @@ export const ViewBill = (props) => {
       axios
         .patch(
           `${
-            process.env.URL || 'http://localhost:8080'
+            apiUrl || 'http://localhost:8080'
           }/api/bill/bill/${billId}`,
           payload,
           {
@@ -102,7 +107,7 @@ export const ViewBill = (props) => {
             usersId: participant,
           }
           axios.post(
-            `${process.env.URL || 'http://localhost:8080'}/api/notification`,
+            `${process.env.NEXT_PUBLIC_URL || 'http://localhost:8080'}/api/notification`,
             notiPayload,
             {
               headers: { authtoken: token },
@@ -150,7 +155,7 @@ export const ViewBill = (props) => {
       axios
         .delete(
           `${
-            process.env.URL || 'http://localhost:8080'
+            process.env.NEXT_PUBLIC_URL || 'http://localhost:8080'
           }/api/bill/bill/${billId}`,
           {
             headers: { authtoken: token },
@@ -163,7 +168,7 @@ export const ViewBill = (props) => {
             usersId: participant,
           }
           axios.post(
-            `${process.env.URL || 'http://localhost:8080'}/api/notification`,
+            `${process.env.NEXT_PUBLIC_URL || 'http://localhost:8080'}/api/notification`,
             notiPayload,
             {
               headers: { authtoken: token },
@@ -327,12 +332,12 @@ export const ViewBill = (props) => {
 }
 export async function getServerSideProps(context) {
   const detail = await axios.get(
-    `${process.env.URL || 'http://localhost:8080'}/api/bill/get/${
+    `${process.env.NEXT_PUBLIC_URL_SERVERSIDE || 'http://localhost:8080'}/api/bill/get/${
       context.params.id
     }`
   )
   const users = await axios.get(
-    `${process.env.URL || 'http://localhost:8080'}/api/user`
+    `${process.env.NEXT_PUBLIC_URL_SERVERSIDE || 'http://localhost:8080'}/api/user`
   )
   const userList = []
   var obj = {}

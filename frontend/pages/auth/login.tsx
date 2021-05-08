@@ -62,7 +62,7 @@ export const Login = observer((prop) => {
                       axios
                         .patch(
                           `${
-                            process.env.URL || 'http://localhost:8080'
+                            process.env.NEXT_PUBLIC_URL || 'http://localhost:8080'
                           }/api/user`,
                           payload,
                           {

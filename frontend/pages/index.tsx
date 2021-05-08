@@ -29,7 +29,7 @@ export const Home = observer((props) => {
     if (authStore.user) {
       auth.currentUser.getIdToken(true).then((token) => {
         axios
-          .get(`${process.env.URL || 'http://localhost:8080'}/api/bill/list`, {
+          .get(`${process.env.NEXT_PUBLIC_URL || 'http://localhost:8080'}/api/bill/list`, {
             headers: {
               authtoken: token,
             },

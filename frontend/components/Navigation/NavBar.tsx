@@ -71,7 +71,7 @@ export const NavBar = observer((props) => {
   const handleNotiClick = async (billNoti) => {
     if (billNoti && billNoti.id) {
       const bill = await axios.get(
-        `${process.env.URL || 'http://localhost:8080'}/api/bill/get/${
+        `${process.env.NEXT_PUBLIC_URL || 'http://localhost:8080'}/api/bill/get/${
           billNoti.id
         }`
       )
@@ -119,7 +119,7 @@ export const NavBar = observer((props) => {
               if (currentToken) {
                 axios.patch(
                   `${
-                    process.env.URL || 'http://localhost:8080'
+                    process.env.NEXT_PUBLIC_URL || 'http://localhost:8080'
                   }/api/user/token`,
                   {
                     token: currentToken,
@@ -150,7 +150,7 @@ export const NavBar = observer((props) => {
     notificationStore.setNotificationCount(0)
     auth.currentUser.getIdToken(true).then((idToken) => {
       const instance = axios.create({
-        baseURL: `${process.env.URL || 'http://localhost:8080'}/api`,
+        baseURL: `${process.env.NEXT_PUBLIC_URL || 'http://localhost:8080'}/api`,
         headers: { authtoken: idToken },
       })
       instance.patch('/notification/readAll').catch((error) => {
@@ -173,7 +173,7 @@ export const NavBar = observer((props) => {
         axios
           .get(
             `${
-              process.env.URL || 'http://localhost:8080'
+              process.env.NEXT_PUBLIC_URL || 'http://localhost:8080'
             }/api/user/current-user/info`,
             {
               headers: {
@@ -187,7 +187,7 @@ export const NavBar = observer((props) => {
         axios
           .get(
             `${
-              process.env.URL || 'http://localhost:8080'
+              process.env.NEXT_PUBLIC_URL || 'http://localhost:8080'
             }/api/notification/current-user/unreaded`,
             {
               headers: {

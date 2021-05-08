@@ -24,6 +24,11 @@ import { useRootStore } from '../../stores/stores'
 import { useRouter } from 'next/router'
 import styles from './bill.module.scss'
 import { UpdateMenuModal } from '../../components/Bill/ModalUpdate'
+import getConfig from '../../next.config';
+
+const { serverRuntimeConfig, publicRuntimeConfig } = getConfig;
+
+const apiUrl = serverRuntimeConfig.apiUrl || publicRuntimeConfig.apiUrl;
 
 export const Bill = observer((props: any) => {
   const [billHolder, setBillHolder] = useState({
@@ -132,7 +137,7 @@ export const Bill = observer((props: any) => {
     auth.currentUser.getIdToken(true).then((token) => {
       axios
         .post(
-          `${process.env.URL || 'http://localhost:8080'}/api/bill/bill`,
+          `${process.env.NEXT_PUBLIC_URL || 'http://localhost:8080'}/api/bill/bill`,
           payload,
           {
             headers: { authtoken: token },
@@ -146,7 +151,7 @@ export const Bill = observer((props: any) => {
             usersId: participant,
           }
           axios.post(
-            `${process.env.URL || 'http://localhost:8080'}/api/notification`,
+            `${process.env.NEXT_PUBLIC_URL || 'http://localhost:8080'}/api/notification`,
             notiPayload,
             {
               headers: { authtoken: token },
@@ -320,30 +325,28 @@ export const Bill = observer((props: any) => {
   )
 })
 export async function getServerSideProps(context) {
+  console.log("Server Side Prop")
   const users = await axios
-    .get(`${process.env.URL || 'http://localhost:8080'}/api/user`)
-    .then((response) => {
-      const userList = []
-      var obj = {}
-      response.data.forEach((user) => {
-        obj = {
-          username: user.username,
-          uid: user.uid,
-          value: user.username,
-          label: user.username,
-          fcmTokens: user.fcmTokens,
-        }
-        userList.push(obj)
-      })
-      return {
-        props: {
-          users: userList,
-        },
-      }
-    })
-    .catch((err) => {
-      console.log(err)
-    })
+    .get(`${process.env.NEXT_PUBLIC_URL_SERVERSIDE || 'http://localhost:8080'}/api/user`)
+  console.log(users)
+  const userList = []
+  var obj = {}
+  users.data.forEach((user) => {
+    obj = {
+      username: user.username,
+      uid: user.uid,
+      value: user.username,
+      label: user.username,
+      fcmTokens: user.fcmTokens,
+    }
+    userList.push(obj)
+  })
+  console.log(userList)
+  return {
+    props: {
+      users: userList,
+    },
+  }
 }
 
 export default Bill

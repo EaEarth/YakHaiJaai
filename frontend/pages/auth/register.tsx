@@ -183,7 +183,7 @@ export const Register = (props) => {
       }))
 
     const checkUsername = await axios.get(
-      `${process.env.URL || 'http://localhost:8080'}/api/user/search/` +
+      `${process.env.NEXT_PUBLIC_URL || 'http://localhost:8080'}/api/user/search/` +
         profile.username
     )
     if (checkUsername.data) {
@@ -258,7 +258,7 @@ export const Register = (props) => {
 
   const register = (payload, token) => {
     axios
-      .post(`${process.env.URL || 'http://localhost:8080'}/api/user`, payload, {
+      .post(`${process.env.NEXT_PUBLIC_URL || 'http://localhost:8080'}/api/user`, payload, {
         headers: {
           authtoken: token,
         },

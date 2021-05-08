@@ -36,7 +36,7 @@ export const Edit = (props) => {
         const token = await user.getIdToken(true)
         const response = await axios.get(
           `${
-            process.env.URL || 'http://localhost:8080'
+            process.env.NEXT_PUBLIC_URL || 'http://localhost:8080'
           }/api/user/current-user/info`,
           {
             headers: {
@@ -145,7 +145,7 @@ export const Edit = (props) => {
   const updateProfile = (payload) => {
     auth.currentUser.getIdToken(true).then(async (token) => {
       const instance = axios.create({
-        baseURL: `${process.env.URL || 'http://localhost:8080'}/api`,
+        baseURL: `${process.env.NEXT_PUBLIC_URL || 'http://localhost:8080'}/api`,
         headers: { authtoken: token },
       })
       instance
