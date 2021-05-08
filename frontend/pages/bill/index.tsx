@@ -24,11 +24,6 @@ import { useRootStore } from '../../stores/stores'
 import { useRouter } from 'next/router'
 import styles from './bill.module.scss'
 import { UpdateMenuModal } from '../../components/Bill/ModalUpdate'
-import getConfig from '../../next.config';
-
-const { serverRuntimeConfig, publicRuntimeConfig } = getConfig;
-
-const apiUrl = serverRuntimeConfig.apiUrl || publicRuntimeConfig.apiUrl;
 
 export const Bill = observer((props: any) => {
   const [billHolder, setBillHolder] = useState({

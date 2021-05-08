@@ -23,11 +23,6 @@ import { useRootStore } from '../../stores/stores'
 import { useRouter } from 'next/router'
 import styles from './bill.module.scss'
 import { UpdateMenuModal } from '../../components/Bill/ModalUpdate'
-import getConfig from '../../next.config';
-
-const { serverRuntimeConfig, publicRuntimeConfig } = getConfig;
-
-const apiUrl = serverRuntimeConfig.apiUrl || publicRuntimeConfig.apiUrl;
 
 export const ViewBill = (props) => {
   const [billHolder, setBillHolder] = useState({
@@ -92,7 +87,7 @@ export const ViewBill = (props) => {
       axios
         .patch(
           `${
-            apiUrl || 'http://localhost:8080'
+            process.env.NEXT_PUBLIC_URL || 'http://localhost:8080'
           }/api/bill/bill/${billId}`,
           payload,
           {
