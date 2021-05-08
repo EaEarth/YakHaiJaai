@@ -61,7 +61,9 @@ export const Login = observer((prop) => {
                       const payload = { fcmToken: currentToken }
                       axios
                         .patch(
-                          'https://yakhaijaai-av4aghecuq-as.a.run.app/api/user',
+                          `${
+                            process.env.NEXT_PUBLIC_URL || 'http://localhost:8080'
+                          }/api/user`,
                           payload,
                           {
                             headers: {

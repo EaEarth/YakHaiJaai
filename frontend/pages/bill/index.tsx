@@ -24,6 +24,11 @@ import { useRootStore } from '../../stores/stores'
 import { useRouter } from 'next/router'
 import styles from './bill.module.scss'
 import { UpdateMenuModal } from '../../components/Bill/ModalUpdate'
+import getConfig from '../../next.config';
+
+const { serverRuntimeConfig, publicRuntimeConfig } = getConfig;
+
+const apiUrl = serverRuntimeConfig.apiUrl || publicRuntimeConfig.apiUrl;
 
 export const Bill = observer((props: any) => {
   const [billHolder, setBillHolder] = useState({
@@ -132,7 +137,7 @@ export const Bill = observer((props: any) => {
     auth.currentUser.getIdToken(true).then((token) => {
       axios
         .post(
-          'https://yakhaijaai-av4aghecuq-as.a.run.app/api/bill/bill',
+          `${process.env.NEXT_PUBLIC_URL || 'http://localhost:8080'}/api/bill/bill`,
           payload,
           {
             headers: { authtoken: token },
@@ -146,7 +151,7 @@ export const Bill = observer((props: any) => {
             usersId: participant,
           }
           axios.post(
-            'https://yakhaijaai-av4aghecuq-as.a.run.app/api/notification',
+            `${process.env.NEXT_PUBLIC_URL || 'http://localhost:8080'}/api/notification`,
             notiPayload,
             {
               headers: { authtoken: token },
@@ -283,7 +288,7 @@ export const Bill = observer((props: any) => {
                     variant="primary"
                     onClick={handleCreatedBill}
                   >
-                    Created Bill
+                    Create Bill
                   </Button>{' '}
                 </Col>
                 {/* <Col md={{span: 3, offset: 1}}><Button size="sm"variant="warning"onClick={handleClear}>Clear data</Button>{' '}</Col> */}
@@ -320,9 +325,10 @@ export const Bill = observer((props: any) => {
   )
 })
 export async function getServerSideProps(context) {
-  const users = await axios.get(
-    `https://yakhaijaai-av4aghecuq-as.a.run.app/api/user`
-  )
+  console.log("Server Side Prop")
+  const users = await axios
+    .get(`${process.env.NEXT_PUBLIC_URL_SERVERSIDE || 'http://localhost:8080'}/api/user`)
+  console.log(users)
   const userList = []
   var obj = {}
   users.data.forEach((user) => {
@@ -335,6 +341,7 @@ export async function getServerSideProps(context) {
     }
     userList.push(obj)
   })
+  console.log(userList)
   return {
     props: {
       users: userList,

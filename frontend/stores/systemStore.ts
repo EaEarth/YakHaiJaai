@@ -18,7 +18,7 @@ export class SystemStore {
     formData.append('file', file, file.name)
     try {
       const response = await axios.post(
-        'https://yakhaijaai-av4aghecuq-as.a.run.app/api/file-item/upload',
+        `${process.env.NEXT_PUBLIC_URL || 'http://localhost:8080'}/api/file-item/upload`,
         formData
       )
       runInAction(() => {
