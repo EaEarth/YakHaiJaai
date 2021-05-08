@@ -25,6 +25,14 @@ export const Home = observer((props) => {
     })
   }
 
+  const handleCreate = (e) => {
+    if(authStore.user){
+      router.push('/bill')
+    }else{
+      router.push('/auth/login')
+    }
+  }
+
   useEffect(() => {
     if (authStore.user) {
       auth.currentUser.getIdToken(true).then((token) => {
@@ -57,13 +65,13 @@ export const Home = observer((props) => {
             <Col className={`${styles['button']}  text-md-right `}>
               <Button
                 className={`${styles['button']}`}
-                onClick={() => router.push('/bill')}
+                onClick={handleCreate}
               >
                 Create
               </Button>
             </Col>
           </Row>
-          <BillGrid bills={bills} />
+          <BillGrid bills={bills} handleCreate={handleCreate} />
         </Container>
       </Jumbotron>
     </DefaultLayout>

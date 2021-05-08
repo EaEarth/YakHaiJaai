@@ -325,10 +325,8 @@ export const Bill = observer((props: any) => {
   )
 })
 export async function getServerSideProps(context) {
-  console.log("Server Side Prop")
   const users = await axios
     .get(`${process.env.NEXT_PUBLIC_URL_SERVERSIDE || 'http://localhost:8080'}/api/user`)
-  console.log(users)
   const userList = []
   var obj = {}
   users.data.forEach((user) => {
@@ -341,7 +339,6 @@ export async function getServerSideProps(context) {
     }
     userList.push(obj)
   })
-  console.log(userList)
   return {
     props: {
       users: userList,

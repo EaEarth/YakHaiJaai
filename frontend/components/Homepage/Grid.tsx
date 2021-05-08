@@ -9,10 +9,11 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 
 export type BillGridProps = {
-  bills: any[]
+  bills: any[],
+  handleCreate: any
 }
 
-export const BillGrid: React.FC<BillGridProps> = ({ bills }) => {
+export const BillGrid: React.FC<BillGridProps> = ({ bills , handleCreate}) => {
   const rows = []
   const router = useRouter()
   const bill = bills.map((bill) => (
@@ -47,9 +48,7 @@ export const BillGrid: React.FC<BillGridProps> = ({ bills }) => {
             className={`${style['empty-bill']} mt-2  justify-content-center rounded`}
           >
             <span>Let's </span>
-            <Link href="/bill">
-              <a className="ml-2">create </a>
-            </Link>
+              <a className="ml-2" onClick={handleCreate}>create </a>
             <span>&nbsp;a new one!</span>
           </Row>
         )}
