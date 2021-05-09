@@ -42,9 +42,7 @@ export class UserService {
 
   async storeUserInfo(token, dto: storeUserInfo): Promise<User> {
     const { fcmToken, avatarId, ...info } = dto;
-    console.log('token : ' + token);
     const user = await this.getUserFromToken(token);
-    console.log('user : ' + user);
     const userInfo = { ...new User(), ...info };
     userInfo.uid = user.uid;
     userInfo.fcmTokens = [];
@@ -69,7 +67,6 @@ export class UserService {
       }
       userInfo.fcmTokens.push(tokenEntity);
     }
-    console.log(userInfo);
     return this.repo.save(userInfo);
   }
 
