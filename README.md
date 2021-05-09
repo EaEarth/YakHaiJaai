@@ -158,7 +158,7 @@ Then issue the following command: `docker push <hostname>/<g-cloud project id>/<
 \*\*\* If pushing failed with unauthorized error, check that current user has Storage Admin permissions or the Owner role. After checking that permissions is sufficient, issue `gcloud auth configure-docker` command to update authentication.
 Note: Firebase information in build arg can be found in json file which is obtained when generating new private key (6.1.6).
 
-Note: Hostname specifies location where the image will be stored. Hostname can be “gcr.io”, “asia.gcr.io” etc.
+Note: Hostname specifies location where the image will be stored. Hostname can be “gcr.io”, “asia.gcr.io” etc.<br/>
 For more information about pushing image :
 https://cloud.google.com/container-registry/docs/pushing-and-pulling 
 
