@@ -1,4 +1,5 @@
-import NavBar from '../components/Navigation/NavBar'
+import React from 'react'
+import NavBar from '../components/navBar'
 
 export const DefaultLayout = ({ children, ...props }) => {
   return (

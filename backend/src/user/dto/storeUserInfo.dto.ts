@@ -1,9 +1,5 @@
 import {
   IsNotEmpty,
-  IsNumber,
-  IsNumberString,
-  IsOptional,
-  Length,
 } from 'class-validator';
 
 export class storeUserInfo {
@@ -15,16 +11,4 @@ export class storeUserInfo {
 
   @IsNotEmpty()
   readonly lastname: string;
-
-  @IsNotEmpty()
-  @IsNumberString()
-  @Length(10)
-  readonly phoneNumber: string;
-
-  @IsOptional()
-  @IsNumber()
-  readonly avatarId: number;
-
-  @IsOptional()
-  readonly fcmToken: string;
 }

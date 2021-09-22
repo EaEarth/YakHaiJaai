@@ -1,81 +1,65 @@
 import Head from 'next/head'
-import React, { useEffect, useState } from 'react'
-import { Button, Col, Container, Jumbotron, Row } from 'react-bootstrap'
+import React, { useState } from 'react'
+import { Col, Container, Row } from 'react-bootstrap'
 import DefaultLayout from '../layouts/Default'
-import styles from '../components/Homepage/homepage.module.scss'
-import { GetServerSidePropsContext } from 'next'
 import axios from 'axios'
-import { auth, firebase } from '../src/firebase'
-import BillGrid from '../components/Homepage/Grid'
-import { useRouter } from 'next/router'
-import dotenv from 'dotenv'
-import { useRootStore } from '../stores/stores'
-import { observer } from 'mobx-react-lite'
+import Link from 'next/link'
 
-export const Home = observer((props) => {
-  const [bills, setbills] = useState([])
-  const [firstTime, setFirstTime] = useState(true)
-  const authStore = useRootStore().authStore
-  const router = useRouter()
-  var messaging
-  if (process.browser) {
-    messaging = firebase.messaging()
-    messaging.requestPermission().catch(function (err) {
-      console.log('Unable to get permission to notify.', err)
-    })
-  }
-
-  const handleCreate = (e) => {
-    if(authStore.user){
-      router.push('/bill')
-    }else{
-      router.push('/auth/login')
-    }
-  }
-
-  useEffect(() => {
-    if (authStore.user) {
-      auth.currentUser.getIdToken(true).then((token) => {
-        axios
-          .get(`${process.env.NEXT_PUBLIC_URL || 'http://localhost:8080'}/api/bill/list`, {
-            headers: {
-              authtoken: token,
-            },
-          })
-          .then((response) => {
-            setbills(response.data)
-          })
-      })
-    } else {
-      setbills([])
-    }
-  }, [authStore.user])
+export const Edit = (props) => {
+  const [profile, setProfile] = useState({
+    username: props.profile.username,
+    firstname: props.profile.firstname,
+    lastname: props.profile.lastname,
+  })
 
   return (
     <DefaultLayout>
       <Head>
-        <title>YakHaiJaai</title>
+        <title>Welcome</title>
       </Head>
-      <Jumbotron className={`${styles['bill-list']}`}>
-        <Container className={`${styles['container']}`}>
-          <Row className="show-grid m-1">
-            <Col className={`${styles['table-title']} m-0 font-weight-bold `}>
-              Your Bill
-            </Col>
-            <Col className={`${styles['button']}  text-md-right `}>
-              <Button
-                className={`${styles['button']}`}
-                onClick={handleCreate}
-              >
-                Create
-              </Button>
-            </Col>
-          </Row>
-          <BillGrid bills={bills} handleCreate={handleCreate} />
-        </Container>
-      </Jumbotron>
+
+      <Container className="my-4">
+        <Row>
+          <Col className="text-center">
+            <h1>Welcome</h1>
+          </Col>
+        </Row>
+        <Row>
+          <Col className="text-center mt-5">
+            <h4>{profile.username || 'guest'}</h4>
+          </Col>
+        </Row>
+        <Row>
+          <Col className="text-center">
+            <h5>
+              {profile.firstname || 'new'}
+              {'  '}
+              {profile.lastname || 'user'}
+            </h5>
+          </Col>
+        </Row>
+        <Row className="m-5">
+          <Col className="text-center">
+            <h3>Is this not you? </h3>
+            <Link href="/user/info">
+              <a>
+                <h3>Click</h3>
+              </a>
+            </Link>
+          </Col>
+        </Row>
+      </Container>
     </DefaultLayout>
   )
-})
+}
 
-export default Home
+export async function getServerSideProps(context) {
+  const { data } = await axios.get(`http://localhost:8080/api/user`)
+  return {
+    props: {
+      profile: data[0],
+    },
+  }
+}
+
+export default Edit
