@@ -1,77 +1,84 @@
-import Head from 'next/head'
-import React, { useState } from 'react'
-import { Col, Container, Form, Row, FormControl, Modal } from 'react-bootstrap'
-import DefaultLayout from '../../layouts/Default'
-import axios from 'axios'
-import { useRouter } from 'next/router'
-import { GetServerSidePropsContext } from 'next'
+import Head from "next/head";
+import React, { useState } from "react";
+import { Col, Container, Form, Row, FormControl } from "react-bootstrap";
+import DefaultLayout from "../../layouts/Default";
+import axios from "axios";
+import { useRouter } from "next/router";
 
-export const Edit = (props) => {
-  const router = useRouter()
+export const Edit = () => {
+  const router = useRouter();
   const [profile, setProfile] = useState({
-    username: '',
-    firstname: '',
-    lastname: '',
-  })
+    username: "",
+    firstname: "",
+    lastname: "",
+  });
   const [required, setRequired] = useState({
-    username: '',
-    firstname: '',
-    lastname: '',
-  })
+    username: "",
+    firstname: "",
+    lastname: "",
+  });
 
   const handleChange = (e) => {
-    const { id, value } = e.target
+    const { id, value } = e.target;
     setProfile((prevState) => ({
       ...prevState,
       [id]: value,
-    }))
-  }
+    }));
+  };
 
   const handleSubmitClick = async (e) => {
-    e.preventDefault()
-    let allInfo = true
+    e.preventDefault();
+    let allInfo = true;
 
     if (!profile.username.length) {
       setRequired((prevRequired) => ({
         ...prevRequired,
-        username: '*required',
-      }))
-      allInfo = false
-    } else setRequired((prevRequired) => ({ ...prevRequired, username: '' }))
+        username: "*required",
+      }));
+      allInfo = false;
+    } else setRequired((prevRequired) => ({ ...prevRequired, username: "" }));
 
     if (!profile.firstname.length) {
       setRequired((prevRequired) => ({
         ...prevRequired,
-        firstname: '*required',
-      }))
-      allInfo = false
-    } else setRequired((prevRequired) => ({ ...prevRequired, firstname: '' }))
+        firstname: "*required",
+      }));
+      allInfo = false;
+    } else setRequired((prevRequired) => ({ ...prevRequired, firstname: "" }));
 
     if (!profile.lastname.length) {
       setRequired((prevRequired) => ({
         ...prevRequired,
-        lastname: '*required',
-      }))
-      allInfo = false
-    } else setRequired((prevRequired) => ({ ...prevRequired, lastname: '' }))
+        lastname: "*required",
+      }));
+      allInfo = false;
+    } else setRequired((prevRequired) => ({ ...prevRequired, lastname: "" }));
 
-    if (!allInfo) return
+    if (!allInfo) return;
     const payload = {
       username: profile.username,
       firstname: profile.firstname,
       lastname: profile.lastname,
-    }
-    updateProfile(payload)
-  }
+    };
+    updateProfile(payload);
+  };
 
   const updateProfile = (payload) => {
-    const instance = axios.create({
-      baseURL: `http://localhost:8080/api`,
-    })
-    instance.post('/user', payload).then((response) => {
-      router.push('/')
-    })
-  }
+    axios
+      .post(`http://localhost:8080/api/user`, payload)
+      .then(function (response) {
+        router.push("/");
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+    // const instance = axios.create({
+    //   baseURL: `app_backend:8080/api`,
+    // });
+    // instance.post("/user", payload).then(() => {
+    //   router.push("/");
+    // });
+  };
 
   return (
     <DefaultLayout>
@@ -155,7 +162,7 @@ export const Edit = (props) => {
               type="button"
               className="float-left my-2 btn btn-danger"
               onClick={() => {
-                router.push('/')
+                router.push("/");
               }}
             >
               Cancel
@@ -164,7 +171,7 @@ export const Edit = (props) => {
         </Row>
       </Container>
     </DefaultLayout>
-  )
-}
+  );
+};
 
-export default Edit
+export default Edit;
