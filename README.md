@@ -1,3 +1,5 @@
+# Overview
+YakHaiJaai is application helping in distributing the cost within the group of people in. The application can create an orders with products and its cost and people who responsibility in paying the cost and the application will distribute the cost automatically.
 # Prerequisite
 Before running our project in any method, the following steps must be done :
 
